@@ -1,8 +1,13 @@
-from flask import Blueprint, render_template, redirect
+from flask import Blueprint, render_template, redirect, jsonify
 from flask_login import current_user
 from models import User
 
 bp = Blueprint("pages", __name__)
+
+
+@bp.route("/health")
+def health():
+    return jsonify({"status": "ok"})
 
 
 @bp.route("/")
