@@ -326,6 +326,7 @@ sessionForm.addEventListener("submit", async (e) => {
 });
 
 async function deleteSession(sessionId, projectId) {
+    if (!confirm("Delete this session?")) return;
     await api(`/api/sessions/${sessionId}`, { method: "DELETE" });
     loadProjects();
 }
