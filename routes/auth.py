@@ -62,8 +62,8 @@ def me():
 def update_profile():
     data = request.get_json(force=True)
     if "height_cm" in data:
-        current_user.height_cm = float(data["height_cm"]) if data["height_cm"] else None
+        current_user.height_cm = float(data["height_cm"]) if data["height_cm"] is not None else None
     if "reach_cm" in data:
-        current_user.reach_cm = float(data["reach_cm"]) if data["reach_cm"] else None
+        current_user.reach_cm = float(data["reach_cm"]) if data["reach_cm"] is not None else None
     db.session.commit()
     return jsonify(current_user.to_dict())

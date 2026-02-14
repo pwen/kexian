@@ -85,8 +85,8 @@ export function setupAuthModals() {
             const body = {
                 username: document.getElementById("signup-username").value,
                 password: document.getElementById("signup-password").value,
-                height_cm: document.getElementById("signup-height").value || null,
-                reach_cm: document.getElementById("signup-reach").value || null,
+                height_cm: document.getElementById("signup-height").value !== "" ? document.getElementById("signup-height").value : null,
+                reach_cm: document.getElementById("signup-reach").value !== "" ? document.getElementById("signup-reach").value : null,
             };
             const res = await fetch("/api/auth/signup", {
                 method: "POST",
