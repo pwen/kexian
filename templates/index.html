@@ -38,7 +38,33 @@
                         <input type="text" id="project-name" required />
                     </label>
                     <label>Grade *
-                        <input type="text" id="project-grade" placeholder="e.g. V7, 5.12a" required />
+                        <select id="project-grade-rope" class="hidden">
+                            <option value="5.11a">5.11a</option>
+                            <option value="5.11b">5.11b</option>
+                            <option value="5.11c">5.11c</option>
+                            <option value="5.11d">5.11d</option>
+                            <option value="5.12a">5.12a</option>
+                            <option value="5.12b">5.12b</option>
+                            <option value="5.12c">5.12c</option>
+                            <option value="5.12d">5.12d</option>
+                            <option value="5.13a">5.13a</option>
+                            <option value="5.13b">5.13b</option>
+                            <option value="5.13c">5.13c</option>
+                            <option value="5.13d">5.13d</option>
+                        </select>
+                        <select id="project-grade-boulder" class="hidden">
+                            <option value="V0">V0</option>
+                            <option value="V1">V1</option>
+                            <option value="V2">V2</option>
+                            <option value="V3">V3</option>
+                            <option value="V4">V4</option>
+                            <option value="V5">V5</option>
+                            <option value="V6">V6</option>
+                            <option value="V7">V7</option>
+                            <option value="V8">V8</option>
+                            <option value="V9">V9</option>
+                            <option value="V10">V10</option>
+                        </select>
                     </label>
                     <label>Type
                         <select id="project-type">
@@ -56,9 +82,9 @@
                         </select>
                     </label>
                     <div id="pitches-group">
-                    <label>Pitches <span class="hint">(sport/trad only)</span>
-                        <input type="number" id="project-pitches" min="1" placeholder="1" />
-                    </label>
+                        <label>Pitches <span class="hint">(sport/trad only)</span>
+                            <input type="number" id="project-pitches" min="1" placeholder="1" />
+                        </label>
                     </div>
                     <label>Length
                         <input type="text" id="project-length" placeholder="e.g. 30m, 100ft" />

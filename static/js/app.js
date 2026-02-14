@@ -174,17 +174,34 @@ document.querySelectorAll(".filter-btn").forEach((btn) => {
     });
 });
 
-// ---- Pitches visibility toggle ----
+// ---- Type-dependent field toggles ----
 const typeSelect = document.getElementById("project-type");
 const pitchesGroup = document.getElementById("pitches-group");
+const gradeRope = document.getElementById("project-grade-rope");
+const gradeBoulder = document.getElementById("project-grade-boulder");
 
-function togglePitches() {
+function toggleTypeFields() {
     const isBoulder = typeSelect.value === "1";
     pitchesGroup.style.display = isBoulder ? "none" : "";
     if (isBoulder) document.getElementById("project-pitches").value = "";
+    gradeRope.classList.toggle("hidden", isBoulder);
+    gradeBoulder.classList.toggle("hidden", !isBoulder);
 }
 
-typeSelect.addEventListener("change", togglePitches);
+function getGradeValue() {
+    return typeSelect.value === "1" ? gradeBoulder.value : gradeRope.value;
+}
+
+function setGradeValue(grade) {
+    if (gradeBoulder.querySelector(`option[value="${grade}"]`)) {
+        gradeBoulder.value = grade;
+    }
+    if (gradeRope.querySelector(`option[value="${grade}"]`)) {
+        gradeRope.value = grade;
+    }
+}
+
+typeSelect.addEventListener("change", toggleTypeFields);
 
 // ---- Project Modal ----
 document.getElementById("add-project-btn").addEventListener("click", () => {
@@ -193,7 +210,7 @@ document.getElementById("add-project-btn").addEventListener("click", () => {
     document.getElementById("project-id").value = "";
     document.getElementById("project-type").value = "1";
     document.getElementById("project-status").value = "0";
-    togglePitches();
+    toggleTypeFields();
     projectModal.classList.remove("hidden");
 });
 
@@ -207,7 +224,7 @@ projectForm.addEventListener("submit", async (e) => {
     const typeVal = parseInt(document.getElementById("project-type").value);
     const body = {
         name: document.getElementById("project-name").value,
-        grade: document.getElementById("project-grade").value,
+        grade: getGradeValue(),
         type: typeVal,
         status: parseInt(document.getElementById("project-status").value),
         pitches: document.getElementById("project-pitches").value ? parseInt(document.getElementById("project-pitches").value) : null,
@@ -230,14 +247,14 @@ async function editProject(id) {
     document.getElementById("modal-title").textContent = "Edit Project";
     document.getElementById("project-id").value = project.id;
     document.getElementById("project-name").value = project.name;
-    document.getElementById("project-grade").value = project.grade;
+    setGradeValue(project.grade);
     document.getElementById("project-type").value = project.type;
     document.getElementById("project-status").value = project.status;
     document.getElementById("project-pitches").value = project.pitches || "";
     document.getElementById("project-length").value = project.length || "";
     document.getElementById("project-location").value = project.location_id || "";
     document.getElementById("project-notes").value = project.notes || "";
-    togglePitches();
+    toggleTypeFields();
     projectModal.classList.remove("hidden");
 }
 

@@ -239,6 +239,7 @@ main {
   z-index: 100;
 }
 .modal.hidden { display: none; }
+.hidden { display: none !important; }
 .modal-content {
   background: var(--surface);
   border: 1px solid var(--border);

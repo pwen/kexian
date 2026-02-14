@@ -107,9 +107,31 @@ def list_projects():
     return jsonify([p.to_dict() for p in query.all()])
 
 
+VALID_BOULDER_GRADES = {f"V{i}" for i in range(11)}  # V0–V10
+VALID_ROPE_GRADES = {
+    f"5.{num}{letter}"
+    for num in range(11, 14)
+    for letter in "abcd"
+}  # 5.11a–5.13d
+
+
+def validate_grade(grade, climb_type):
+    """Return an error string if the grade is invalid, else None."""
+    if not grade or not grade.strip():
+        return "Grade is required."
+    if climb_type == 1 and grade not in VALID_BOULDER_GRADES:
+        return f"Invalid boulder grade '{grade}'. Must be V0–V10."
+    if climb_type in (0, 2) and grade not in VALID_ROPE_GRADES:
+        return f"Invalid grade '{grade}'. Must be 5.11a–5.13d."
+    return None
+
+
 @app.route("/api/projects", methods=["POST"])
 def create_project():
     data = request.get_json(force=True)
+    err = validate_grade(data.get("grade", ""), data.get("type", 1))
+    if err:
+        return jsonify({"error": err}), 400
     project = Project(
         name=data["name"],
         grade=data["grade"],
@@ -131,6 +153,12 @@ def update_project(project_id):
     if project is None:
         return jsonify({"error": "Project not found"}), 404
     data = request.get_json(force=True)
+    err = validate_grade(
+        data.get("grade", project.grade),
+        data.get("type", project.type),
+    )
+    if err:
+        return jsonify({"error": err}), 400
     for col in ("name", "grade", "type", "status", "pitches", "length", "location_id", "notes"):
         if col in data:
             setattr(project, col, data[col])
