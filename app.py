@@ -196,6 +196,7 @@ def create_session(project_id):
     s = Session(
         project_id=project_id,
         date=session_date,
+        style=int(data.get("style", 0)),
         notes=data.get("notes", ""),
     )
     db.session.add(s)
@@ -211,6 +212,8 @@ def update_session(session_id):
     data = request.get_json(force=True)
     if "date" in data:
         s.date = date.fromisoformat(data["date"])
+    if "style" in data:
+        s.style = int(data["style"])
     if "notes" in data:
         s.notes = data["notes"]
     db.session.commit()

@@ -124,6 +124,7 @@ function projectCard(p) {
         ? p.sessions.map(s => `
           <div class="attempt-item">
             <span class="session-date">${s.date}</span>
+            <span class="session-style style-${s.style_label.toLowerCase()}">${s.style_label}</span>
             <span class="session-note">${s.notes ? esc(s.notes) : ""}</span>
             <span class="session-actions">
               <button class="btn-icon edit-icon" onclick="editSession(${s.id}, ${p.id})" title="Edit">&#9998;</button>
@@ -289,6 +290,7 @@ function openSessionModal(projectId) {
     document.getElementById("session-id").value = "";
     document.getElementById("session-project-id").value = projectId;
     document.getElementById("session-date").value = today();
+    document.getElementById("session-style").value = "0";
     sessionModal.classList.remove("hidden");
 }
 
@@ -300,6 +302,7 @@ async function editSession(sessionId, projectId) {
     document.getElementById("session-id").value = s.id;
     document.getElementById("session-project-id").value = projectId;
     document.getElementById("session-date").value = s.date;
+    document.getElementById("session-style").value = s.style;
     document.getElementById("session-notes").value = s.notes || "";
     sessionModal.classList.remove("hidden");
 }
@@ -314,6 +317,7 @@ sessionForm.addEventListener("submit", async (e) => {
     const projectId = document.getElementById("session-project-id").value;
     const body = {
         date: document.getElementById("session-date").value,
+        style: document.getElementById("session-style").value,
         notes: document.getElementById("session-notes").value,
     };
     if (sessionId) {

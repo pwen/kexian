@@ -263,6 +263,17 @@ main {
 }
 .attempt-item:last-child { border-bottom: none; }
 
+.session-style {
+    flex-shrink: 0;
+    width: 4.5rem;
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.style-send    { color: #22c55e; }
+.style-flash   { color: #facc15; }
+.style-attempt { color: #94a3b8; }
 .session-date {
   flex-shrink: 0;
   width: 5.5rem;
