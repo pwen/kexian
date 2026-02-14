@@ -4,6 +4,24 @@ import pycountry
 from flask import Flask, render_template, request, jsonify
 from flask_migrate import Migrate
 from models import db, Project, Session, Location, PROJECT_STATUS, PROJECT_TYPE
+from models.session import STYLE_FLASH, STYLE_SEND
+from datetime import timedelta
+
+
+def sync_project_status(project_id):
+    """Recalculate project status based on its sessions."""
+    project = db.session.get(Project, project_id)
+    if not project:
+        return
+    if not project.sessions:
+        project.status = 0  # To Try
+    elif any(s.style in (STYLE_FLASH, STYLE_SEND) for s in project.sessions):
+        project.status = 3  # Sent
+    elif project.last_session.date < date.today() - timedelta(days=180):
+        project.status = 2  # On Hold
+    else:
+        project.status = 1  # Projecting
+    db.session.commit()
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
@@ -201,6 +219,7 @@ def create_session(project_id):
     )
     db.session.add(s)
     db.session.commit()
+    sync_project_status(project_id)
     return jsonify(s.to_dict()), 201
 
 
@@ -217,6 +236,7 @@ def update_session(session_id):
     if "notes" in data:
         s.notes = data["notes"]
     db.session.commit()
+    sync_project_status(s.project_id)
     return jsonify(s.to_dict())
 
 
@@ -224,8 +244,10 @@ def update_session(session_id):
 def delete_session(session_id):
     s = db.session.get(Session, session_id)
     if s:
+        project_id = s.project_id
         db.session.delete(s)
         db.session.commit()
+        sync_project_status(project_id)
     return "", 204
 
 

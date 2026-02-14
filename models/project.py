@@ -20,6 +20,13 @@ class Project(db.Model):
         "Session", backref="project", cascade="all, delete-orphan", lazy=True
     )
 
+    @property
+    def last_session(self):
+        """Return the most recent session by date, or None."""
+        if not self.sessions:
+            return None
+        return max(self.sessions, key=lambda s: s.date)
+
     def to_dict(self):
         return {
             "id": self.id,
