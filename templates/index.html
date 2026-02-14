@@ -20,11 +20,19 @@
     <main>
         <!-- Filters -->
         <div class="filters">
-            <button class="filter-btn active" data-status="">All</button>
-            <button class="filter-btn" data-status="0">To Try</button>
-            <button class="filter-btn" data-status="1">Projecting</button>
-            <button class="filter-btn" data-status="2">On Hold</button>
-            <button class="filter-btn" data-status="3">Sent</button>
+            <select id="filter-status" class="filter-select">
+                <option value="">All Status</option>
+                <option value="0">To Try</option>
+                <option value="1">Projecting</option>
+                <option value="2">On Hold</option>
+                <option value="3">Sent</option>
+            </select>
+            <select id="filter-type" class="filter-select">
+                <option value="">All Types</option>
+                <option value="0">Sport</option>
+                <option value="1">Boulder</option>
+                <option value="2">Trad</option>
+            </select>
             <button class="btn-primary" id="add-project-btn">+ Add Project</button>
         </div>
 

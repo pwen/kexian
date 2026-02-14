@@ -3,7 +3,8 @@
 // ---------------------------------------------------------------------------
 
 const API = "";
-let currentFilter = "";
+let filterStatus = "";
+let filterType = "";
 let locations = [];
 
 const STATUS_LABELS = { 0: "To Try", 1: "Projecting", 2: "On Hold", 3: "Sent" };
@@ -100,7 +101,10 @@ locationForm.addEventListener("submit", async (e) => {
 
 // ---- Load & Render Projects ----
 async function loadProjects() {
-    const qs = currentFilter !== "" ? `?status=${currentFilter}` : "";
+    const params = new URLSearchParams();
+    if (filterStatus !== "") params.set("status", filterStatus);
+    if (filterType !== "") params.set("type", filterType);
+    const qs = params.toString() ? `?${params}` : "";
     const projects = await api(`/api/projects${qs}`);
     if (!projects.length) {
         projectsList.innerHTML = `<div class="empty-state"><p>No projects yet — add your first one!</p></div>`;
@@ -185,14 +189,14 @@ async function toggleSessions(projectId) {
     section.classList.remove("hidden");
 }
 
-// ---- Filter Buttons ----
-document.querySelectorAll(".filter-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentFilter = btn.dataset.status;
-        loadProjects();
-    });
+// ---- Filter Dropdowns ----
+document.getElementById("filter-status").addEventListener("change", (e) => {
+    filterStatus = e.target.value;
+    loadProjects();
+});
+document.getElementById("filter-type").addEventListener("change", (e) => {
+    filterType = e.target.value;
+    loadProjects();
 });
 
 // ---- Type-dependent field toggles ----

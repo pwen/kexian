@@ -119,9 +119,12 @@ def create_location():
 @app.route("/api/projects", methods=["GET"])
 def list_projects():
     status = request.args.get("status", type=int)
+    climb_type = request.args.get("type", type=int)
     query = Project.query.order_by(Project.created_at.desc())
     if status is not None:
         query = query.filter_by(status=status)
+    if climb_type is not None:
+        query = query.filter_by(type=climb_type)
     return jsonify([p.to_dict() for p in query.all()])
 
 
