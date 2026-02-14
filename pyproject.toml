@@ -1,5 +1,5 @@
 [project]
-name = "climbing-tracker"
+name = "kexian"
 version = "0.1.0"
 description = "Track climbing projects, log attempts, celebrate sends."
 requires-python = ">=3.10"
@@ -8,7 +8,10 @@ dependencies = [
     "flask-sqlalchemy>=3.1",
     "flask-migrate>=4.0",
     "pycountry>=24.6",
+    "psycopg2-binary>=2.9",
+    "gunicorn>=22.0",
+    "python-dotenv>=1.0",
 ]
 
 [project.scripts]
-climbing-tracker = "app:app"
+kexian = "app:app"

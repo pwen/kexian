@@ -6,8 +6,9 @@ from flask_migrate import Migrate
 from models import db, Project, Session, Location, PROJECT_STATUS, PROJECT_TYPE
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
-    os.path.dirname(__file__), "projects.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "DATABASE_URL",
+    "postgresql://kexian:kexian@localhost:5432/kexian",
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 

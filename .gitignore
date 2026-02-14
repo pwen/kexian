@@ -23,5 +23,8 @@ venv/
 .DS_Store
 Thumbs.db
 
+# Environment
+.env
+
 # uv
 .python-version
