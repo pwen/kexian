@@ -6,6 +6,26 @@ const API = "";
 let filterStatus = "";
 let filterType = "";
 let filterDate = "";
+
+// Read initial filter state from URL
+(function initFiltersFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    filterStatus = params.get("status") || "";
+    filterType = params.get("type") || "";
+    filterDate = params.get("date") || "";
+    document.getElementById("filter-status").value = filterStatus;
+    document.getElementById("filter-type").value = filterType;
+    // filter-date is populated async, set after populateDateFilter
+})();
+
+function updateURL() {
+    const params = new URLSearchParams();
+    if (filterStatus) params.set("status", filterStatus);
+    if (filterType) params.set("type", filterType);
+    if (filterDate) params.set("date", filterDate);
+    const qs = params.toString() ? `?${params}` : "";
+    history.replaceState(null, "", `${window.location.pathname}${qs}`);
+}
 let sortCol = "name";
 let sortAsc = true;
 let allExpanded = false;
@@ -107,55 +127,24 @@ locationForm.addEventListener("submit", async (e) => {
 let allProjects = [];
 let dateFilterYears = []; // cached to avoid rebuilding on every render
 
-function populateDateFilter(projects) {
-    const years = new Set();
-    for (const p of projects) {
-        for (const s of (p.sessions || [])) {
-            if (!s.planned && s.date) years.add(s.date.slice(0, 4));
-        }
-    }
-    const sorted = [...years].sort().reverse();
-    // Only rebuild if years changed
-    if (JSON.stringify(sorted) === JSON.stringify(dateFilterYears)) return;
-    dateFilterYears = sorted;
+async function populateDateFilter() {
+    const years = await api("/api/session-years");
+    if (JSON.stringify(years) === JSON.stringify(dateFilterYears)) return;
+    dateFilterYears = years;
     const sel = document.getElementById("filter-date");
-    const cur = sel.value;
     sel.innerHTML = `<option value="">All Time</option><option value="ytd">YTD</option>`
-        + sorted.map(y => `<option value="${y}">${y}</option>`).join("");
-    sel.value = cur; // preserve selection
+        + years.map(y => `<option value="${y}">${y}</option>`).join("");
+    sel.value = filterDate; // restore from URL
 }
 
 async function loadProjects() {
     const params = new URLSearchParams();
     if (filterStatus !== "") params.set("status", filterStatus);
     if (filterType !== "") params.set("type", filterType);
+    if (filterDate !== "") params.set("date", filterDate);
     const qs = params.toString() ? `?${params}` : "";
     allProjects = await api(`/api/projects${qs}`);
-    populateDateFilter(allProjects);
-    // Client-side date filter on last session
-    if (filterDate) {
-        const now = new Date();
-        let cutoff;
-        if (filterDate === "ytd") {
-            cutoff = `${now.getFullYear()}-01-01`;
-        } else {
-            // Specific year
-            cutoff = `${filterDate}-01-01`;
-            const cutoffEnd = `${filterDate}-12-31`;
-            allProjects = allProjects.filter(p => {
-                const real = (p.sessions || []).filter(s => !s.planned);
-                return real.some(s => s.date >= cutoff && s.date <= cutoffEnd);
-            });
-            renderProjects();
-            return;
-        }
-        if (cutoff) {
-            allProjects = allProjects.filter(p => {
-                const real = (p.sessions || []).filter(s => !s.planned);
-                return real.some(s => s.date >= cutoff);
-            });
-        }
-    }
+    updateURL();
     renderProjects();
 }
 
@@ -462,4 +451,5 @@ const sessionDatePicker = flatpickr("#session-date", {
 
 // ---- Init ----
 loadLocations();
+populateDateFilter();
 loadProjects();

@@ -121,12 +121,41 @@ def create_location():
 def list_projects():
     status = request.args.get("status", type=int)
     climb_type = request.args.get("type", type=int)
+    date_filter = request.args.get("date", type=str)  # "ytd", or a 4-digit year
     query = Project.query.order_by(Project.created_at.desc())
     if status is not None:
         query = query.filter_by(status=status)
     if climb_type is not None:
         query = query.filter_by(type=climb_type)
+    if date_filter:
+        if date_filter == "ytd":
+            start = date(date.today().year, 1, 1)
+            query = query.filter(
+                Project.sessions.any((Session.date >= start) & (Session.planned == False))
+            )
+        elif date_filter.isdigit() and len(date_filter) == 4:
+            year = int(date_filter)
+            start = date(year, 1, 1)
+            end = date(year, 12, 31)
+            query = query.filter(
+                Project.sessions.any(
+                    (Session.date >= start) & (Session.date <= end) & (Session.planned == False)
+                )
+            )
     return jsonify([p.to_dict() for p in query.all()])
+
+
+@app.route("/api/session-years", methods=["GET"])
+def session_years():
+    """Return distinct years that have non-planned sessions."""
+    rows = (
+        db.session.query(db.func.extract("year", Session.date))
+        .filter(Session.planned == False)
+        .distinct()
+        .all()
+    )
+    years = sorted([int(r[0]) for r in rows], reverse=True)
+    return jsonify(years)
 
 
 VALID_BOULDER_GRADES = {f"V{i}" for i in range(11)}  # V0–V10
