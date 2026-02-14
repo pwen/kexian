@@ -1,0 +1,268 @@
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0f1117;
+  --surface:   #1a1d27;
+  --border:    #2a2d3a;
+  --text:      #e4e4e7;
+  --muted:     #9ca3af;
+  --accent:    #6366f1;
+  --accent-hover: #818cf8;
+  --green:     #22c55e;
+  --yellow:    #eab308;
+  --red:       #ef4444;
+  --radius:    8px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ---------- Header ---------- */
+header {
+  text-align: center;
+  padding: 2rem 1rem 1rem;
+}
+header h1 { font-size: 1.8rem; }
+.subtitle { color: var(--muted); font-size: 0.95rem; margin-top: 0.25rem; }
+
+/* ---------- Main ---------- */
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+}
+
+/* ---------- Filters ---------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+.filter-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.15s;
+}
+.filter-btn:hover, .filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: var(--accent-hover); }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.btn-secondary:hover { border-color: var(--muted); }
+
+.btn-small {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.btn-small:hover { border-color: var(--accent); color: var(--accent); }
+.btn-small.danger:hover { border-color: var(--red); color: var(--red); }
+
+/* ---------- Route Cards ---------- */
+.routes-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.route-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  transition: border-color 0.15s;
+}
+.route-card:hover { border-color: var(--accent); }
+
+.route-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.route-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.route-grade {
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.route-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.status-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+}
+.status-badge.project  { background: rgba(234,179,8,0.15);  color: var(--yellow); }
+.status-badge.sent     { background: rgba(34,197,94,0.15);  color: var(--green);  }
+.status-badge.abandoned{ background: rgba(239,68,68,0.15);  color: var(--red);    }
+
+.route-notes {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.route-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+/* ---------- Attempts ---------- */
+.attempts-section {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+}
+.attempts-section h3 {
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  color: var(--muted);
+}
+.attempt-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.35rem 0;
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--border);
+}
+.attempt-item:last-child { border-bottom: none; }
+.attempt-result {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+}
+.attempt-result.send, .attempt-result.flash, .attempt-result.onsight {
+  color: var(--green);
+  background: rgba(34,197,94,0.12);
+}
+.attempt-result.fall {
+  color: var(--red);
+  background: rgba(239,68,68,0.12);
+}
+.attempt-result.progress {
+  color: var(--yellow);
+  background: rgba(234,179,8,0.12);
+}
+
+/* ---------- Modal ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 100;
+}
+.modal.hidden { display: none; }
+.modal-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 420px;
+}
+.modal-content h2 { margin-bottom: 1rem; font-size: 1.15rem; }
+
+.modal-content label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+.modal-content input:focus,
+.modal-content select:focus,
+.modal-content textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: flex-end;
+}
+
+/* ---------- Empty state ---------- */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+}
+.empty-state p { font-size: 0.95rem; }

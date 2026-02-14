@@ -1,0 +1,11 @@
+[project]
+name = "climbing-tracker"
+version = "0.1.0"
+description = "Track climbing projects, log attempts, celebrate sends."
+requires-python = ">=3.10"
+dependencies = [
+    "flask>=3.0",
+]
+
+[project.scripts]
+climbing-tracker = "app:app"
