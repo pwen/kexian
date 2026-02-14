@@ -62,9 +62,12 @@
                         <input type="text" id="project-length" placeholder="e.g. 30m, 100ft" />
                     </label>
                     <label>Location
-                        <select id="project-location">
-                            <option value="">— None —</option>
-                        </select>
+                        <div class="location-row">
+                            <select id="project-location">
+                                <option value="">— None —</option>
+                            </select>
+                            <button type="button" class="btn-small" id="new-location-btn">+ New</button>
+                        </div>
                     </label>
                     <label>Notes
                         <textarea id="project-notes" rows="3"></textarea>
@@ -92,6 +95,34 @@
                     <div class="modal-actions">
                         <button type="submit" class="btn-primary">Log</button>
                         <button type="button" class="btn-secondary" id="cancel-session">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Location Modal -->
+        <div id="location-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Add Location</h2>
+                <form id="location-form">
+                    <label>Country *
+                        <select id="loc-country" required>
+                            <option value="">Select country…</option>
+                        </select>
+                    </label>
+                    <label>State / Province
+                        <select id="loc-state">
+                            <option value="">— None —</option>
+                        </select>
+                    </label>
+                    <label>Area * <span class="hint">(e.g. Bishop, Rocklands)</span>
+                        <input type="text" id="loc-area" required />
+                    </label>
+                    <label>Crag <span class="hint">(e.g. Buttermilks)</span>
+                        <input type="text" id="loc-crag" />
+                    </label>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn-primary">Save Location</button>
+                        <button type="button" class="btn-secondary" id="cancel-location">Cancel</button>
                     </div>
                 </form>
             </div>

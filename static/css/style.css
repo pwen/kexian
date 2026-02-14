@@ -166,6 +166,15 @@ main {
   font-weight: 400;
 }
 
+.location-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+.location-row select { flex: 1; }
+.location-row .btn-small { white-space: nowrap; margin-top: 0; }
+
 .route-notes {
   margin-top: 0.5rem;
   font-size: 0.85rem;
