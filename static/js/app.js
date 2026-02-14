@@ -120,26 +120,45 @@ function projectCard(p) {
     const lengthInfo = p.length ? esc(p.length) : "";
     const meta = [pitchInfo, lengthInfo].filter(Boolean).join(" · ");
 
+    const sessionsHtml = p.sessions && p.sessions.length
+        ? p.sessions.map(s => `
+          <div class="attempt-item">
+            <span class="session-date">${s.date}</span>
+            <span class="session-note">${s.notes ? esc(s.notes) : ""}</span>
+            <span class="session-actions">
+              <button class="btn-icon edit-icon" onclick="editSession(${s.id}, ${p.id})" title="Edit">&#9998;</button>
+              <button class="btn-icon danger" onclick="deleteSession(${s.id}, ${p.id})" title="Delete">✕</button>
+            </span>
+          </div>`).join("")
+        : `<p class="no-sessions">No sessions yet.</p>`;
+
     return `
     <div class="route-card" id="project-${p.id}">
-      <div class="route-header">
-        <span class="route-title">${esc(p.name)}</span>
-        <span class="route-grade">${esc(p.grade)}</span>
+      <div class="route-card-columns">
+        <div class="route-left">
+          <div class="route-header">
+            <span class="status-badge ${STATUS_CLASSES[p.status]}">${STATUS_LABELS[p.status]}</span>
+            <span class="route-title">${esc(p.name)}</span>
+            <span class="route-grade">${esc(p.grade)}</span>
+          </div>
+          <div class="route-meta">
+            <span class="type-badge">${TYPE_LABELS[p.type]}</span>
+            ${locName ? `<span>📍 ${locName}</span>` : ""}
+            ${meta ? `<span>${meta}</span>` : ""}
+          </div>
+          <div class="route-actions">
+            <button class="btn-icon edit-icon" onclick="editProject(${p.id})" title="Edit">&#9998;</button>
+            <button class="btn-icon danger" onclick="deleteProject(${p.id})" title="Delete">✕</button>
+          </div>
+        </div>
+        <div class="route-right">
+          <div class="sessions-header">
+            <h4 class="sessions-heading">Sessions${p.sessions.length ? ` (${p.sessions.length})` : ""}</h4>
+            <button class="btn-icon accent" onclick="openSessionModal(${p.id})" title="Add Session">＋</button>
+          </div>
+          ${sessionsHtml}
+        </div>
       </div>
-      <div class="route-meta">
-        <span class="status-badge ${STATUS_CLASSES[p.status]}">${STATUS_LABELS[p.status]}</span>
-        <span class="type-badge">${TYPE_LABELS[p.type]}</span>
-        ${locName ? `<span>📍 ${locName}</span>` : ""}
-        ${meta ? `<span>${meta}</span>` : ""}
-      </div>
-      ${p.notes ? `<div class="route-notes">${esc(p.notes)}</div>` : ""}
-      <div class="route-actions">
-        <button class="btn-small toggle-sessions" data-id="${p.id}">Sessions ▾</button>
-        <button class="btn-small accent" onclick="openSessionModal(${p.id})">+ Session</button>
-        <button class="btn-small" onclick="editProject(${p.id})">Edit</button>
-        <button class="btn-small danger" onclick="deleteProject(${p.id})">Delete</button>
-      </div>
-      <div class="attempts-section hidden" id="sessions-${p.id}"></div>
     </div>`;
 }
 
@@ -303,13 +322,20 @@ sessionForm.addEventListener("submit", async (e) => {
         await api(`/api/projects/${projectId}/sessions`, { method: "POST", body: JSON.stringify(body) });
     }
     sessionModal.classList.add("hidden");
-    toggleSessions(projectId);
+    loadProjects();
 });
 
 async function deleteSession(sessionId, projectId) {
     await api(`/api/sessions/${sessionId}`, { method: "DELETE" });
-    toggleSessions(projectId);  // refresh
+    loadProjects();
 }
+
+// ---- Flatpickr date picker ----
+const sessionDatePicker = flatpickr("#session-date", {
+    dateFormat: "Y-m-d",
+    defaultDate: "today",
+    theme: "dark",
+});
 
 // ---- Init ----
 loadLocations();

@@ -34,5 +34,6 @@ class Project(db.Model):
             "location_id": self.location_id,
             "location": self.location.to_dict() if self.location else None,
             "notes": self.notes,
+            "sessions": [s.to_dict() for s in sorted(self.sessions, key=lambda s: s.date, reverse=True)],
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }

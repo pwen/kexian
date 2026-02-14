@@ -33,7 +33,7 @@ header h1 { font-size: 1.8rem; }
 
 /* ---------- Main ---------- */
 main {
-  max-width: 720px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem 3rem;
 }
@@ -102,6 +102,22 @@ main {
 .btn-small.accent:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 .btn-small.danger:hover { border-color: var(--red); color: var(--red); }
 
+.btn-icon {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.btn-icon:hover { border-color: var(--accent); color: var(--accent); }
+.btn-icon.edit-icon { transform: scaleX(-1); }
+.btn-icon.accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-icon.accent:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-icon.danger:hover { border-color: var(--red); color: var(--red); }
+
 /* ---------- Route Cards ---------- */
 .routes-list { display: flex; flex-direction: column; gap: 0.75rem; }
 
@@ -109,19 +125,55 @@ main {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 1rem 1.25rem;
+  padding: 1rem 1.5rem;
   transition: border-color 0.15s;
 }
 .route-card:hover { border-color: var(--accent); }
 
-.route-header {
+.route-card-columns {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  gap: 2rem;
+}
+.route-left {
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
 }
+.route-right {
+  flex: 1;
+  min-width: 0;
+  border-left: 1px solid var(--border);
+  padding-left: 1.5rem;
+}
+
+.sessions-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.sessions-heading {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin: 0;
+}
+.no-sessions {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.route-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
 .route-title {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 600;
 }
 .route-grade {
@@ -203,13 +255,29 @@ main {
 }
 .attempt-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.35rem 0;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.4rem 0;
   font-size: 0.8rem;
   border-bottom: 1px solid var(--border);
 }
 .attempt-item:last-child { border-bottom: none; }
+
+.session-date {
+  flex-shrink: 0;
+  width: 5.5rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.session-note {
+  flex: 1;
+  min-width: 0;
+}
+.session-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.25rem;
+}
 .attempt-result {
   font-weight: 600;
   text-transform: uppercase;
