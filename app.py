@@ -62,7 +62,7 @@ def list_subdivisions(country_code):
 
 @app.route("/api/locations", methods=["GET"])
 def list_locations():
-    locations = Location.query.order_by(Location.country, Location.state, Location.area).all()
+    locations = Location.query.order_by(Location.country_name, Location.state_name, Location.area).all()
     return jsonify([{**l.to_dict(), "display_name": l.display_name()} for l in locations])
 
 
@@ -201,6 +201,20 @@ def create_session(project_id):
     db.session.add(s)
     db.session.commit()
     return jsonify(s.to_dict()), 201
+
+
+@app.route("/api/sessions/<int:session_id>", methods=["PUT"])
+def update_session(session_id):
+    s = db.session.get(Session, session_id)
+    if s is None:
+        return jsonify({"error": "Session not found"}), 404
+    data = request.get_json(force=True)
+    if "date" in data:
+        s.date = date.fromisoformat(data["date"])
+    if "notes" in data:
+        s.notes = data["notes"]
+    db.session.commit()
+    return jsonify(s.to_dict())
 
 
 @app.route("/api/sessions/<int:session_id>", methods=["DELETE"])

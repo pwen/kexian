@@ -98,6 +98,8 @@ main {
   transition: all 0.15s;
 }
 .btn-small:hover { border-color: var(--accent); color: var(--accent); }
+.btn-small.accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-small.accent:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 .btn-small.danger:hover { border-color: var(--red); color: var(--red); }
 
 /* ---------- Route Cards ---------- */

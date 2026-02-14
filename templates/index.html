@@ -97,9 +97,6 @@
                             <button type="button" class="btn-small" id="new-location-btn">+ New</button>
                         </div>
                     </label>
-                    <label>Notes
-                        <textarea id="project-notes" rows="3"></textarea>
-                    </label>
                     <div class="modal-actions">
                         <button type="submit" class="btn-primary">Save</button>
                         <button type="button" class="btn-secondary" id="cancel-project">Cancel</button>
@@ -111,8 +108,9 @@
         <!-- Session Modal -->
         <div id="session-modal" class="modal hidden">
             <div class="modal-content">
-                <h2>Log Session</h2>
+                <h2 id="session-modal-title">Log Session</h2>
                 <form id="session-form">
+                    <input type="hidden" id="session-id" />
                     <input type="hidden" id="session-project-id" />
                     <label>Date
                         <input type="date" id="session-date" />

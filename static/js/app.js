@@ -47,7 +47,7 @@ async function loadLocations() {
 function populateLocationSelect() {
     const select = document.getElementById("project-location");
     select.innerHTML = `<option value="">— None —</option>` +
-        locations.map(l => `<option value="${l.id}">${esc(l.display_name)}</option>`).join("");
+        locations.map(l => `<option value="${l.id}">${esc(l.crag || l.area)}</option>`).join("");
 }
 
 // ---- Location Modal (cascading country → state) ----
@@ -135,7 +135,7 @@ function projectCard(p) {
       ${p.notes ? `<div class="route-notes">${esc(p.notes)}</div>` : ""}
       <div class="route-actions">
         <button class="btn-small toggle-sessions" data-id="${p.id}">Sessions ▾</button>
-        <button class="btn-small" onclick="openSessionModal(${p.id})">+ Session</button>
+        <button class="btn-small accent" onclick="openSessionModal(${p.id})">+ Session</button>
         <button class="btn-small" onclick="editProject(${p.id})">Edit</button>
         <button class="btn-small danger" onclick="deleteProject(${p.id})">Delete</button>
       </div>
@@ -158,6 +158,7 @@ async function toggleSessions(projectId) {
       <div class="attempt-item">
         <span>${s.date}</span>
         <span>${s.notes ? esc(s.notes) : ""}</span>
+        <button class="btn-small" onclick="editSession(${s.id}, ${projectId})">Edit</button>
         <button class="btn-small danger" onclick="deleteSession(${s.id}, ${projectId})">✕</button>
       </div>`).join("");
     }
@@ -230,7 +231,6 @@ projectForm.addEventListener("submit", async (e) => {
         pitches: document.getElementById("project-pitches").value ? parseInt(document.getElementById("project-pitches").value) : null,
         length: document.getElementById("project-length").value || null,
         location_id: document.getElementById("project-location").value ? parseInt(document.getElementById("project-location").value) : null,
-        notes: document.getElementById("project-notes").value,
     };
     if (id) {
         await api(`/api/projects/${id}`, { method: "PUT", body: JSON.stringify(body) });
@@ -253,7 +253,6 @@ async function editProject(id) {
     document.getElementById("project-pitches").value = project.pitches || "";
     document.getElementById("project-length").value = project.length || "";
     document.getElementById("project-location").value = project.location_id || "";
-    document.getElementById("project-notes").value = project.notes || "";
     toggleTypeFields();
     projectModal.classList.remove("hidden");
 }
@@ -266,9 +265,23 @@ async function deleteProject(id) {
 
 // ---- Session Modal ----
 function openSessionModal(projectId) {
+    document.getElementById("session-modal-title").textContent = "Log Session";
     sessionForm.reset();
+    document.getElementById("session-id").value = "";
     document.getElementById("session-project-id").value = projectId;
     document.getElementById("session-date").value = today();
+    sessionModal.classList.remove("hidden");
+}
+
+async function editSession(sessionId, projectId) {
+    const sessions = await api(`/api/projects/${projectId}/sessions`);
+    const s = sessions.find(x => x.id === sessionId);
+    if (!s) return;
+    document.getElementById("session-modal-title").textContent = "Edit Session";
+    document.getElementById("session-id").value = s.id;
+    document.getElementById("session-project-id").value = projectId;
+    document.getElementById("session-date").value = s.date;
+    document.getElementById("session-notes").value = s.notes || "";
     sessionModal.classList.remove("hidden");
 }
 
@@ -278,14 +291,19 @@ document.getElementById("cancel-session").addEventListener("click", () => {
 
 sessionForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    const sessionId = document.getElementById("session-id").value;
     const projectId = document.getElementById("session-project-id").value;
     const body = {
         date: document.getElementById("session-date").value,
         notes: document.getElementById("session-notes").value,
     };
-    await api(`/api/projects/${projectId}/sessions`, { method: "POST", body: JSON.stringify(body) });
+    if (sessionId) {
+        await api(`/api/sessions/${sessionId}`, { method: "PUT", body: JSON.stringify(body) });
+    } else {
+        await api(`/api/projects/${projectId}/sessions`, { method: "POST", body: JSON.stringify(body) });
+    }
     sessionModal.classList.add("hidden");
-    loadProjects();
+    toggleSessions(projectId);
 });
 
 async function deleteSession(sessionId, projectId) {
