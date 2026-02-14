@@ -6,6 +6,7 @@ class Project(db.Model):
     __tablename__ = "projects"
 
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     name = db.Column(db.String, nullable=False)
     grade = db.Column(db.String, nullable=False)
     type = db.Column(db.Integer, nullable=False, default=1)       # 0=Sport, 1=Boulder, 2=Trad

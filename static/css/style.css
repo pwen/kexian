@@ -50,6 +50,7 @@ body {
 .nav-links {
   display: flex;
   gap: 1.5rem;
+  align-items: center;
 }
 .nav-links .tab {
   font-size: 1.2rem;
@@ -487,3 +488,47 @@ main {
   color: var(--muted);
 }
 .empty-state p { font-size: 0.95rem; }
+
+/* ---------- Auth Nav ---------- */
+.nav-separator {
+  color: var(--border);
+  font-weight: 300;
+  user-select: none;
+}
+.nav-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.nav-user {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-user:hover {
+  color: var(--accent);
+}
+/* ---------- Auth Modals ---------- */
+.modal-narrow {
+  max-width: 380px;
+}
+.form-error {
+  color: var(--red);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+.modal-footer-text {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.modal-footer-text a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.modal-footer-text a:hover {
+  text-decoration: underline;
+}

@@ -23,3 +23,4 @@ PROJECT_TYPE = {
 from models.location import Location  # noqa: E402, F401
 from models.project import Project    # noqa: E402, F401
 from models.session import Session    # noqa: E402, F401
+from models.user import User          # noqa: E402, F401
