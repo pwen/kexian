@@ -4,13 +4,18 @@
 
 const API = "";
 let currentFilter = "";
+let locations = [];
+
+const STATUS_LABELS = { 0: "To Try", 1: "Projecting", 2: "On Hold", 3: "Sent" };
+const STATUS_CLASSES = { 0: "to-try", 1: "projecting", 2: "on-hold", 3: "sent" };
+const TYPE_LABELS = { 0: "Sport", 1: "Boulder", 2: "Trad" };
 
 // ---- DOM refs ----
-const routesList     = document.getElementById("routes-list");
-const routeModal     = document.getElementById("route-modal");
-const attemptModal   = document.getElementById("attempt-modal");
-const routeForm      = document.getElementById("route-form");
-const attemptForm    = document.getElementById("attempt-form");
+const projectsList   = document.getElementById("projects-list");
+const projectModal   = document.getElementById("project-modal");
+const sessionModal   = document.getElementById("session-modal");
+const projectForm    = document.getElementById("project-form");
+const sessionForm    = document.getElementById("session-form");
 
 // ---- Helpers ----
 async function api(path, opts = {}) {
@@ -26,68 +31,82 @@ function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
-// ---- Load & Render Routes ----
-async function loadRoutes() {
-  const qs = currentFilter ? `?status=${currentFilter}` : "";
-  const routes = await api(`/api/routes${qs}`);
-  if (!routes.length) {
-    routesList.innerHTML = `<div class="empty-state"><p>No routes yet — add your first project!</p></div>`;
-    return;
-  }
-  routesList.innerHTML = routes.map(routeCard).join("");
-
-  // Attach expand listeners
-  routesList.querySelectorAll(".toggle-attempts").forEach((btn) => {
-    btn.addEventListener("click", () => toggleAttempts(btn.dataset.id));
-  });
-}
-
-function routeCard(r) {
-  return `
-    <div class="route-card" id="route-${r.id}">
-      <div class="route-header">
-        <span class="route-title">${esc(r.name)}</span>
-        <span class="route-grade">${esc(r.grade)}</span>
-      </div>
-      <div class="route-meta">
-        <span class="status-badge ${r.status}">${r.status}</span>
-        ${r.location ? `<span>📍 ${esc(r.location)}</span>` : ""}
-        <span>${r.style}</span>
-        ${r.sent_at ? `<span>✅ Sent ${r.sent_at}</span>` : ""}
-      </div>
-      ${r.notes ? `<div class="route-notes">${esc(r.notes)}</div>` : ""}
-      <div class="route-actions">
-        <button class="btn-small toggle-attempts" data-id="${r.id}">Attempts ▾</button>
-        <button class="btn-small" onclick="openAttemptModal(${r.id})">+ Attempt</button>
-        <button class="btn-small" onclick="editRoute(${r.id})">Edit</button>
-        <button class="btn-small danger" onclick="deleteRoute(${r.id})">Delete</button>
-      </div>
-      <div class="attempts-section hidden" id="attempts-${r.id}"></div>
-    </div>`;
-}
-
 function esc(s) {
+  if (!s) return "";
   const d = document.createElement("div");
   d.textContent = s;
   return d.innerHTML;
 }
 
-// ---- Attempts Toggle ----
-async function toggleAttempts(routeId) {
-  const section = document.getElementById(`attempts-${routeId}`);
+// ---- Load Locations ----
+async function loadLocations() {
+  locations = await api("/api/locations");
+  const select = document.getElementById("project-location");
+  select.innerHTML = `<option value="">— None —</option>` +
+    locations.map(l => `<option value="${l.id}">${esc(l.name)}${l.area ? " – " + esc(l.area) : ""}</option>`).join("");
+}
+
+// ---- Load & Render Projects ----
+async function loadProjects() {
+  const qs = currentFilter !== "" ? `?status=${currentFilter}` : "";
+  const projects = await api(`/api/projects${qs}`);
+  if (!projects.length) {
+    projectsList.innerHTML = `<div class="empty-state"><p>No projects yet — add your first one!</p></div>`;
+    return;
+  }
+  projectsList.innerHTML = projects.map(projectCard).join("");
+
+  // Attach expand listeners
+  projectsList.querySelectorAll(".toggle-sessions").forEach((btn) => {
+    btn.addEventListener("click", () => toggleSessions(btn.dataset.id));
+  });
+}
+
+function projectCard(p) {
+  const locName = p.location ? esc(p.location.name) : "";
+  const pitchInfo = p.pitches && p.type !== 1 ? `${p.pitches}p` : "";
+  const lengthInfo = p.length ? esc(p.length) : "";
+  const meta = [pitchInfo, lengthInfo].filter(Boolean).join(" · ");
+
+  return `
+    <div class="route-card" id="project-${p.id}">
+      <div class="route-header">
+        <span class="route-title">${esc(p.name)}</span>
+        <span class="route-grade">${esc(p.grade)}</span>
+      </div>
+      <div class="route-meta">
+        <span class="status-badge ${STATUS_CLASSES[p.status]}">${STATUS_LABELS[p.status]}</span>
+        <span class="type-badge">${TYPE_LABELS[p.type]}</span>
+        ${locName ? `<span>📍 ${locName}</span>` : ""}
+        ${meta ? `<span>${meta}</span>` : ""}
+      </div>
+      ${p.notes ? `<div class="route-notes">${esc(p.notes)}</div>` : ""}
+      <div class="route-actions">
+        <button class="btn-small toggle-sessions" data-id="${p.id}">Sessions ▾</button>
+        <button class="btn-small" onclick="openSessionModal(${p.id})">+ Session</button>
+        <button class="btn-small" onclick="editProject(${p.id})">Edit</button>
+        <button class="btn-small danger" onclick="deleteProject(${p.id})">Delete</button>
+      </div>
+      <div class="attempts-section hidden" id="sessions-${p.id}"></div>
+    </div>`;
+}
+
+// ---- Sessions Toggle ----
+async function toggleSessions(projectId) {
+  const section = document.getElementById(`sessions-${projectId}`);
   if (!section.classList.contains("hidden")) {
     section.classList.add("hidden");
     return;
   }
-  const attempts = await api(`/api/routes/${routeId}/attempts`);
-  if (!attempts.length) {
-    section.innerHTML = `<h3>Attempts</h3><p style="font-size:0.8rem;color:var(--muted)">No attempts logged yet.</p>`;
+  const sessions = await api(`/api/projects/${projectId}/sessions`);
+  if (!sessions.length) {
+    section.innerHTML = `<h3>Sessions</h3><p style="font-size:0.8rem;color:var(--muted)">No sessions logged yet.</p>`;
   } else {
-    section.innerHTML = `<h3>Attempts (${attempts.length})</h3>` + attempts.map(a => `
+    section.innerHTML = `<h3>Sessions (${sessions.length})</h3>` + sessions.map(s => `
       <div class="attempt-item">
-        <span>${a.date} — <span class="attempt-result ${a.result}">${a.result}</span></span>
-        <span>${a.notes ? esc(a.notes) : ""}</span>
-        <button class="btn-small danger" onclick="deleteAttempt(${a.id}, ${routeId})">✕</button>
+        <span>${s.date}</span>
+        <span>${s.notes ? esc(s.notes) : ""}</span>
+        <button class="btn-small danger" onclick="deleteSession(${s.id}, ${projectId})">✕</button>
       </div>`).join("");
   }
   section.classList.remove("hidden");
@@ -99,91 +118,98 @@ document.querySelectorAll(".filter-btn").forEach((btn) => {
     document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     currentFilter = btn.dataset.status;
-    loadRoutes();
+    loadProjects();
   });
 });
 
-// ---- Route Modal ----
-document.getElementById("add-route-btn").addEventListener("click", () => {
-  document.getElementById("modal-title").textContent = "Add Route";
-  routeForm.reset();
-  document.getElementById("route-id").value = "";
-  routeModal.classList.remove("hidden");
+// ---- Project Modal ----
+document.getElementById("add-project-btn").addEventListener("click", () => {
+  document.getElementById("modal-title").textContent = "Add Project";
+  projectForm.reset();
+  document.getElementById("project-id").value = "";
+  document.getElementById("project-type").value = "1";
+  document.getElementById("project-status").value = "0";
+  projectModal.classList.remove("hidden");
 });
 
-document.getElementById("cancel-route").addEventListener("click", () => {
-  routeModal.classList.add("hidden");
+document.getElementById("cancel-project").addEventListener("click", () => {
+  projectModal.classList.add("hidden");
 });
 
-routeForm.addEventListener("submit", async (e) => {
+projectForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const id = document.getElementById("route-id").value;
+  const id = document.getElementById("project-id").value;
+  const typeVal = parseInt(document.getElementById("project-type").value);
   const body = {
-    name:     document.getElementById("route-name").value,
-    grade:    document.getElementById("route-grade").value,
-    location: document.getElementById("route-location").value,
-    style:    document.getElementById("route-style").value,
-    status:   document.getElementById("route-status").value,
-    notes:    document.getElementById("route-notes").value,
+    name:        document.getElementById("project-name").value,
+    grade:       document.getElementById("project-grade").value,
+    type:        typeVal,
+    status:      parseInt(document.getElementById("project-status").value),
+    pitches:     document.getElementById("project-pitches").value ? parseInt(document.getElementById("project-pitches").value) : null,
+    length:      document.getElementById("project-length").value || null,
+    location_id: document.getElementById("project-location").value ? parseInt(document.getElementById("project-location").value) : null,
+    notes:       document.getElementById("project-notes").value,
   };
   if (id) {
-    await api(`/api/routes/${id}`, { method: "PUT", body: JSON.stringify(body) });
+    await api(`/api/projects/${id}`, { method: "PUT", body: JSON.stringify(body) });
   } else {
-    await api("/api/routes", { method: "POST", body: JSON.stringify(body) });
+    await api("/api/projects", { method: "POST", body: JSON.stringify(body) });
   }
-  routeModal.classList.add("hidden");
-  loadRoutes();
+  projectModal.classList.add("hidden");
+  loadProjects();
 });
 
-async function editRoute(id) {
-  const route = (await api("/api/routes")).find(r => r.id === id);
-  if (!route) return;
-  document.getElementById("modal-title").textContent = "Edit Route";
-  document.getElementById("route-id").value       = route.id;
-  document.getElementById("route-name").value      = route.name;
-  document.getElementById("route-grade").value     = route.grade;
-  document.getElementById("route-location").value  = route.location || "";
-  document.getElementById("route-style").value     = route.style;
-  document.getElementById("route-status").value    = route.status;
-  document.getElementById("route-notes").value     = route.notes || "";
-  routeModal.classList.remove("hidden");
+async function editProject(id) {
+  const project = (await api("/api/projects")).find(p => p.id === id);
+  if (!project) return;
+  document.getElementById("modal-title").textContent = "Edit Project";
+  document.getElementById("project-id").value       = project.id;
+  document.getElementById("project-name").value      = project.name;
+  document.getElementById("project-grade").value     = project.grade;
+  document.getElementById("project-type").value      = project.type;
+  document.getElementById("project-status").value    = project.status;
+  document.getElementById("project-pitches").value   = project.pitches || "";
+  document.getElementById("project-length").value    = project.length || "";
+  document.getElementById("project-location").value  = project.location_id || "";
+  document.getElementById("project-notes").value     = project.notes || "";
+  projectModal.classList.remove("hidden");
 }
 
-async function deleteRoute(id) {
-  if (!confirm("Delete this route and all its attempts?")) return;
-  await api(`/api/routes/${id}`, { method: "DELETE" });
-  loadRoutes();
+async function deleteProject(id) {
+  if (!confirm("Delete this project and all its sessions?")) return;
+  await api(`/api/projects/${id}`, { method: "DELETE" });
+  loadProjects();
 }
 
-// ---- Attempt Modal ----
-function openAttemptModal(routeId) {
-  attemptForm.reset();
-  document.getElementById("attempt-route-id").value = routeId;
-  document.getElementById("attempt-date").value = today();
-  attemptModal.classList.remove("hidden");
+// ---- Session Modal ----
+function openSessionModal(projectId) {
+  sessionForm.reset();
+  document.getElementById("session-project-id").value = projectId;
+  document.getElementById("session-date").value = today();
+  sessionModal.classList.remove("hidden");
 }
 
-document.getElementById("cancel-attempt").addEventListener("click", () => {
-  attemptModal.classList.add("hidden");
+document.getElementById("cancel-session").addEventListener("click", () => {
+  sessionModal.classList.add("hidden");
 });
 
-attemptForm.addEventListener("submit", async (e) => {
+sessionForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const routeId = document.getElementById("attempt-route-id").value;
+  const projectId = document.getElementById("session-project-id").value;
   const body = {
-    date:   document.getElementById("attempt-date").value,
-    result: document.getElementById("attempt-result").value,
-    notes:  document.getElementById("attempt-notes").value,
+    date:  document.getElementById("session-date").value,
+    notes: document.getElementById("session-notes").value,
   };
-  await api(`/api/routes/${routeId}/attempts`, { method: "POST", body: JSON.stringify(body) });
-  attemptModal.classList.add("hidden");
-  loadRoutes();
+  await api(`/api/projects/${projectId}/sessions`, { method: "POST", body: JSON.stringify(body) });
+  sessionModal.classList.add("hidden");
+  loadProjects();
 });
 
-async function deleteAttempt(attemptId, routeId) {
-  await api(`/api/attempts/${attemptId}`, { method: "DELETE" });
-  toggleAttempts(routeId);  // refresh
+async function deleteSession(sessionId, projectId) {
+  await api(`/api/sessions/${sessionId}`, { method: "DELETE" });
+  toggleSessions(projectId);  // refresh
 }
 
 // ---- Init ----
-loadRoutes();
+loadLocations();
+loadProjects();

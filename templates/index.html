@@ -11,86 +11,87 @@
 <body>
     <header>
         <h1>🧗 Climbing Tracker</h1>
-        <p class="subtitle">Track your projects, log attempts, celebrate sends.</p>
+        <p class="subtitle">Track your projects, log sessions, celebrate sends.</p>
     </header>
 
     <main>
         <!-- Filters -->
         <div class="filters">
             <button class="filter-btn active" data-status="">All</button>
-            <button class="filter-btn" data-status="project">Projects</button>
-            <button class="filter-btn" data-status="sent">Sent</button>
-            <button class="filter-btn" data-status="abandoned">Abandoned</button>
-            <button class="btn-primary" id="add-route-btn">+ Add Route</button>
+            <button class="filter-btn" data-status="0">To Try</button>
+            <button class="filter-btn" data-status="1">Projecting</button>
+            <button class="filter-btn" data-status="2">On Hold</button>
+            <button class="filter-btn" data-status="3">Sent</button>
+            <button class="btn-primary" id="add-project-btn">+ Add Project</button>
         </div>
 
-        <!-- Route list -->
-        <div id="routes-list" class="routes-list"></div>
+        <!-- Project list -->
+        <div id="projects-list" class="routes-list"></div>
 
-        <!-- Add / Edit Route Modal -->
-        <div id="route-modal" class="modal hidden">
+        <!-- Add / Edit Project Modal -->
+        <div id="project-modal" class="modal hidden">
             <div class="modal-content">
-                <h2 id="modal-title">Add Route</h2>
-                <form id="route-form">
-                    <input type="hidden" id="route-id" />
+                <h2 id="modal-title">Add Project</h2>
+                <form id="project-form">
+                    <input type="hidden" id="project-id" />
                     <label>Name *
-                        <input type="text" id="route-name" required />
+                        <input type="text" id="project-name" required />
                     </label>
                     <label>Grade *
-                        <input type="text" id="route-grade" placeholder="e.g. V7, 5.12a" required />
+                        <input type="text" id="project-grade" placeholder="e.g. V7, 5.12a" required />
                     </label>
-                    <label>Location
-                        <input type="text" id="route-location" placeholder="e.g. Bishop, Red Rock" />
-                    </label>
-                    <label>Style
-                        <select id="route-style">
-                            <option value="boulder">Boulder</option>
-                            <option value="sport">Sport</option>
-                            <option value="trad">Trad</option>
+                    <label>Type
+                        <select id="project-type">
+                            <option value="0">Sport</option>
+                            <option value="1" selected>Boulder</option>
+                            <option value="2">Trad</option>
                         </select>
                     </label>
                     <label>Status
-                        <select id="route-status">
-                            <option value="project">Project</option>
-                            <option value="sent">Sent</option>
-                            <option value="abandoned">Abandoned</option>
+                        <select id="project-status">
+                            <option value="0">To Try</option>
+                            <option value="1">Projecting</option>
+                            <option value="2">On Hold</option>
+                            <option value="3">Sent</option>
+                        </select>
+                    </label>
+                    <label>Pitches <span class="hint">(sport/trad only)</span>
+                        <input type="number" id="project-pitches" min="1" placeholder="1" />
+                    </label>
+                    <label>Length
+                        <input type="text" id="project-length" placeholder="e.g. 30m, 100ft" />
+                    </label>
+                    <label>Location
+                        <select id="project-location">
+                            <option value="">— None —</option>
                         </select>
                     </label>
                     <label>Notes
-                        <textarea id="route-notes" rows="3"></textarea>
+                        <textarea id="project-notes" rows="3"></textarea>
                     </label>
                     <div class="modal-actions">
                         <button type="submit" class="btn-primary">Save</button>
-                        <button type="button" class="btn-secondary" id="cancel-route">Cancel</button>
+                        <button type="button" class="btn-secondary" id="cancel-project">Cancel</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Attempt Modal -->
-        <div id="attempt-modal" class="modal hidden">
+        <!-- Session Modal -->
+        <div id="session-modal" class="modal hidden">
             <div class="modal-content">
-                <h2>Log Attempt</h2>
-                <form id="attempt-form">
-                    <input type="hidden" id="attempt-route-id" />
+                <h2>Log Session</h2>
+                <form id="session-form">
+                    <input type="hidden" id="session-project-id" />
                     <label>Date
-                        <input type="date" id="attempt-date" />
-                    </label>
-                    <label>Result
-                        <select id="attempt-result">
-                            <option value="fall">Fall</option>
-                            <option value="progress">Progress</option>
-                            <option value="send">Send</option>
-                            <option value="flash">Flash</option>
-                            <option value="onsight">Onsight</option>
-                        </select>
+                        <input type="date" id="session-date" />
                     </label>
                     <label>Notes
-                        <textarea id="attempt-notes" rows="2"></textarea>
+                        <textarea id="session-notes" rows="3"></textarea>
                     </label>
                     <div class="modal-actions">
                         <button type="submit" class="btn-primary">Log</button>
-                        <button type="button" class="btn-secondary" id="cancel-attempt">Cancel</button>
+                        <button type="button" class="btn-secondary" id="cancel-session">Cancel</button>
                     </div>
                 </form>
             </div>

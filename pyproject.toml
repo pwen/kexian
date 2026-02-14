@@ -5,6 +5,8 @@ description = "Track climbing projects, log attempts, celebrate sends."
 requires-python = ">=3.10"
 dependencies = [
     "flask>=3.0",
+    "flask-sqlalchemy>=3.1",
+    "flask-migrate>=4.0",
 ]
 
 [project.scripts]
