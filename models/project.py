@@ -22,10 +22,19 @@ class Project(db.Model):
 
     @property
     def last_session(self):
-        """Return the most recent session by date, or None."""
-        if not self.sessions:
+        """Return the most recent non-planned session by date, or None."""
+        real = [s for s in self.sessions if not s.planned]
+        if not real:
             return None
-        return max(self.sessions, key=lambda s: s.date)
+        return max(real, key=lambda s: s.date)
+
+    @property
+    def next_session(self):
+        """Return the earliest planned session, or None."""
+        planned = [s for s in self.sessions if s.planned]
+        if not planned:
+            return None
+        return min(planned, key=lambda s: s.date)
 
     def to_dict(self):
         return {
@@ -41,6 +50,6 @@ class Project(db.Model):
             "location_id": self.location_id,
             "location": self.location.to_dict() if self.location else None,
             "notes": self.notes,
-            "sessions": [s.to_dict() for s in sorted(self.sessions, key=lambda s: s.date, reverse=True)],
+            "sessions": [s.to_dict() for s in sorted(self.sessions, key=lambda s: (s.planned, s.date), reverse=True)],
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }

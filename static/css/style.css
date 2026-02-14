@@ -130,30 +130,66 @@ main {
 /* ---------- Route Cards ---------- */
 .routes-list { display: flex; flex-direction: column; gap: 0.75rem; }
 
-.route-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1rem 1.5rem;
-  transition: border-color 0.15s;
+/* ---------- Projects Table ---------- */
+.projects-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
 }
-.route-card:hover { border-color: var(--accent); }
+.projects-table thead th {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+}
+.projects-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+.projects-table th.sortable:hover {
+  color: var(--accent);
+}
+.projects-table tbody .project-row td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  cursor: pointer;
+}
+.projects-table tbody .project-row:hover td {
+  background: rgba(99,102,241,0.06);
+}
+.col-name { font-weight: 600; }
+.col-date {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.col-location {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.col-actions {
+  white-space: nowrap;
+  display: flex;
+  gap: 0.25rem;
+}
 
-.route-card-columns {
-  display: flex;
-  gap: 2rem;
+/* Sessions expanded row */
+.sessions-row td {
+  padding: 0 !important;
+  border-bottom: 1px solid var(--border);
 }
-.route-left {
-  flex: 0 0 300px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.route-right {
-  flex: 1;
-  min-width: 0;
-  border-left: 1px solid var(--border);
-  padding-left: 1.5rem;
+.sessions-block {
+  background: rgba(26, 29, 39, 0.6);
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
 }
 
 .sessions-header {
@@ -283,6 +319,12 @@ main {
 .style-send    { color: #22c55e; }
 .style-flash   { color: #facc15; }
 .style-attempt { color: #94a3b8; }
+.style-planned { color: var(--accent); }
+.attempt-item.planned {
+  opacity: 0.7;
+  border-left: 2px solid var(--accent);
+  padding-left: 0.5rem;
+}
 .session-date {
   flex-shrink: 0;
   width: 5.5rem;
@@ -371,6 +413,17 @@ main {
   gap: 0.5rem;
   margin-top: 1rem;
   justify-content: flex-end;
+}
+.checkbox-label {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
 }
 
 /* ---------- Empty state ---------- */

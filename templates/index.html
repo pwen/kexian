@@ -33,6 +33,11 @@
                 <option value="1">Boulder</option>
                 <option value="2">Trad</option>
             </select>
+            <select id="filter-date" class="filter-select">
+                <option value="">All Time</option>
+                <option value="ytd">YTD</option>
+            </select>
+            <button class="btn-secondary" id="toggle-all-sessions">Show Sessions</button>
             <button class="btn-primary" id="add-project-btn">+ Add Project</button>
         </div>
 
@@ -132,6 +137,10 @@
                             <option value="1">Flash</option>
                             <option value="2">Send</option>
                         </select>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="session-planned" />
+                        Planned (hasn't happened yet)
                     </label>
                     <label>Notes
                         <textarea id="session-notes" rows="6"></textarea>

@@ -9,13 +9,14 @@ from datetime import timedelta
 
 
 def sync_project_status(project_id):
-    """Recalculate project status based on its sessions."""
+    """Recalculate project status based on its sessions (ignoring planned)."""
     project = db.session.get(Project, project_id)
     if not project:
         return
-    if not project.sessions:
+    real_sessions = [s for s in project.sessions if not s.planned]
+    if not real_sessions:
         project.status = 0  # To Try
-    elif any(s.style in (STYLE_FLASH, STYLE_SEND) for s in project.sessions):
+    elif any(s.style in (STYLE_FLASH, STYLE_SEND) for s in real_sessions):
         project.status = 3  # Sent
     elif project.last_session.date < date.today() - timedelta(days=180):
         project.status = 2  # On Hold
@@ -214,10 +215,12 @@ def list_sessions(project_id):
 def create_session(project_id):
     data = request.get_json(force=True)
     session_date = date.fromisoformat(data["date"]) if "date" in data else date.today()
+    is_planned = data.get("planned", session_date > date.today())
     s = Session(
         project_id=project_id,
         date=session_date,
         style=int(data.get("style", 0)),
+        planned=bool(is_planned),
         notes=data.get("notes", ""),
     )
     db.session.add(s)
@@ -236,6 +239,8 @@ def update_session(session_id):
         s.date = date.fromisoformat(data["date"])
     if "style" in data:
         s.style = int(data["style"])
+    if "planned" in data:
+        s.planned = bool(data["planned"])
     if "notes" in data:
         s.notes = data["notes"]
     db.session.commit()

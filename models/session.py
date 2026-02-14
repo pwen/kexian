@@ -17,6 +17,7 @@ class Session(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), nullable=False)
     date = db.Column(db.Date, nullable=False, default=date.today)
     style = db.Column(db.Integer, nullable=False, default=STYLE_ATTEMPT)
+    planned = db.Column(db.Boolean, nullable=False, default=False)
     notes = db.Column(db.Text, default="")
 
     def to_dict(self):
@@ -26,5 +27,6 @@ class Session(db.Model):
             "date": self.date.isoformat() if self.date else None,
             "style": self.style,
             "style_label": SESSION_STYLES.get(self.style, "Attempt"),
+            "planned": self.planned,
             "notes": self.notes,
         }

@@ -5,6 +5,10 @@
 const API = "";
 let filterStatus = "";
 let filterType = "";
+let filterDate = "";
+let sortCol = "name";
+let sortAsc = true;
+let allExpanded = false;
 let locations = [];
 
 const STATUS_LABELS = { 0: "To Try", 1: "Projecting", 2: "On Hold", 3: "Sent" };
@@ -100,94 +104,191 @@ locationForm.addEventListener("submit", async (e) => {
 });
 
 // ---- Load & Render Projects ----
+let allProjects = [];
+let dateFilterYears = []; // cached to avoid rebuilding on every render
+
+function populateDateFilter(projects) {
+    const years = new Set();
+    for (const p of projects) {
+        for (const s of (p.sessions || [])) {
+            if (!s.planned && s.date) years.add(s.date.slice(0, 4));
+        }
+    }
+    const sorted = [...years].sort().reverse();
+    // Only rebuild if years changed
+    if (JSON.stringify(sorted) === JSON.stringify(dateFilterYears)) return;
+    dateFilterYears = sorted;
+    const sel = document.getElementById("filter-date");
+    const cur = sel.value;
+    sel.innerHTML = `<option value="">All Time</option><option value="ytd">YTD</option>`
+        + sorted.map(y => `<option value="${y}">${y}</option>`).join("");
+    sel.value = cur; // preserve selection
+}
+
 async function loadProjects() {
     const params = new URLSearchParams();
     if (filterStatus !== "") params.set("status", filterStatus);
     if (filterType !== "") params.set("type", filterType);
     const qs = params.toString() ? `?${params}` : "";
-    const projects = await api(`/api/projects${qs}`);
-    if (!projects.length) {
+    allProjects = await api(`/api/projects${qs}`);
+    populateDateFilter(allProjects);
+    // Client-side date filter on last session
+    if (filterDate) {
+        const now = new Date();
+        let cutoff;
+        if (filterDate === "ytd") {
+            cutoff = `${now.getFullYear()}-01-01`;
+        } else {
+            // Specific year
+            cutoff = `${filterDate}-01-01`;
+            const cutoffEnd = `${filterDate}-12-31`;
+            allProjects = allProjects.filter(p => {
+                const real = (p.sessions || []).filter(s => !s.planned);
+                return real.some(s => s.date >= cutoff && s.date <= cutoffEnd);
+            });
+            renderProjects();
+            return;
+        }
+        if (cutoff) {
+            allProjects = allProjects.filter(p => {
+                const real = (p.sessions || []).filter(s => !s.planned);
+                return real.some(s => s.date >= cutoff);
+            });
+        }
+    }
+    renderProjects();
+}
+
+function sortProjects(projects) {
+    const sorted = [...projects];
+    sorted.sort((a, b) => {
+        let va, vb;
+        switch (sortCol) {
+            case "status": va = a.status; vb = b.status; break;
+            case "name": va = (a.name || "").toLowerCase(); vb = (b.name || "").toLowerCase(); break;
+            case "type": va = a.type; vb = b.type; break;
+            case "grade": va = (a.grade || ""); vb = (b.grade || ""); break;
+            case "location":
+                va = a.location ? (a.location.crag || a.location.area || "").toLowerCase() : "";
+                vb = b.location ? (b.location.crag || b.location.area || "").toLowerCase() : "";
+                break;
+            case "last_session":
+                va = (a.sessions || []).filter(s => !s.planned).length ? a.sessions.filter(s => !s.planned)[0].date : "";
+                vb = (b.sessions || []).filter(s => !s.planned).length ? b.sessions.filter(s => !s.planned)[0].date : "";
+                break;
+            case "next_session":
+                const ap = (a.sessions || []).filter(s => s.planned);
+                const bp = (b.sessions || []).filter(s => s.planned);
+                va = ap.length ? ap[ap.length - 1].date : "";
+                vb = bp.length ? bp[bp.length - 1].date : "";
+                break;
+            default: va = 0; vb = 0;
+        }
+        if (va < vb) return sortAsc ? -1 : 1;
+        if (va > vb) return sortAsc ? 1 : -1;
+        return 0;
+    });
+    return sorted;
+}
+
+function renderProjects() {
+    if (!allProjects.length) {
         projectsList.innerHTML = `<div class="empty-state"><p>No projects yet — add your first one!</p></div>`;
         return;
     }
-    projectsList.innerHTML = projects.map(projectCard).join("");
+    const sorted = sortProjects(allProjects);
+    const arrow = (col) => sortCol === col ? (sortAsc ? " ▲" : " ▼") : "";
 
-    // Attach expand listeners
-    projectsList.querySelectorAll(".toggle-sessions").forEach((btn) => {
-        btn.addEventListener("click", () => toggleSessions(btn.dataset.id));
+    let html = `<table class="projects-table">
+      <thead><tr>
+        <th class="sortable" data-col="status">Status${arrow("status")}</th>
+        <th class="sortable" data-col="name">Name${arrow("name")}</th>
+        <th class="sortable" data-col="type">Type${arrow("type")}</th>
+        <th class="sortable" data-col="grade">Grade${arrow("grade")}</th>
+        <th class="sortable" data-col="location">Location${arrow("location")}</th>
+        <th class="sortable" data-col="last_session">Last Session${arrow("last_session")}</th>
+        <th class="sortable" data-col="next_session">Next Session${arrow("next_session")}</th>
+        <th>Actions</th>
+      </tr></thead><tbody>`;
+
+    for (const p of sorted) {
+        const locName = p.location ? esc([p.location.crag, p.location.area].filter(Boolean).join(", ")) : "";
+        const realSessions = p.sessions ? p.sessions.filter(s => !s.planned) : [];
+        const plannedSessions = p.sessions ? p.sessions.filter(s => s.planned) : [];
+        const lastDate = realSessions.length ? realSessions[0].date : "";
+        const nextDate = plannedSessions.length ? plannedSessions[plannedSessions.length - 1].date : "";
+        const sessionCount = p.sessions ? p.sessions.length : 0;
+
+        const sessionsHtml = sessionCount
+            ? p.sessions.map(s => `
+              <div class="attempt-item${s.planned ? ' planned' : ''}">
+                <span class="session-date">${s.date}</span>
+                <span class="session-style style-${s.planned ? 'planned' : s.style_label.toLowerCase()}">${s.planned ? 'Planned' : s.style_label}</span>
+                <span class="session-note">${s.notes ? esc(s.notes) : ""}</span>
+                <span class="session-actions">
+                  <button class="btn-icon edit-icon" onclick="editSession(${s.id}, ${p.id})" title="Edit">&#9998;</button>
+                  <button class="btn-icon danger" onclick="deleteSession(${s.id}, ${p.id})" title="Delete">✕</button>
+                </span>
+              </div>`).join("")
+            : `<p class="no-sessions">No sessions yet.</p>`;
+
+        html += `
+          <tr class="project-row" data-id="${p.id}">
+            <td><span class="status-badge ${STATUS_CLASSES[p.status]}">${STATUS_LABELS[p.status]}</span></td>
+            <td class="col-name">${esc(p.name)}</td>
+            <td><span class="type-badge">${TYPE_LABELS[p.type]}</span></td>
+            <td><span class="route-grade">${esc(p.grade)}</span></td>
+            <td class="col-location">${locName ? `📍 ${locName}` : ""}</td>
+            <td class="col-date">${lastDate}</td>
+            <td class="col-date">${nextDate}</td>
+            <td class="col-actions">
+              <button class="btn-icon edit-icon" onclick="editProject(${p.id})" title="Edit">&#9998;</button>
+              <button class="btn-icon danger" onclick="deleteProject(${p.id})" title="Delete">✕</button>
+              <button class="btn-icon accent" onclick="openSessionModal(${p.id})" title="Log Session">📝</button>
+            </td>
+          </tr>
+          <tr class="sessions-row hidden" id="sessions-row-${p.id}">
+            <td colspan="8">
+              <div class="sessions-block">
+                <div class="sessions-header">
+                  <h4 class="sessions-heading">Sessions${sessionCount ? ` (${sessionCount})` : ""}</h4>
+                </div>
+                ${sessionsHtml}
+              </div>
+            </td>
+          </tr>`;
+    }
+    html += `</tbody></table>`;
+    projectsList.innerHTML = html;
+
+    // Attach sort listeners
+    projectsList.querySelectorAll(".sortable").forEach(th => {
+        th.addEventListener("click", () => {
+            const col = th.dataset.col;
+            if (sortCol === col) { sortAsc = !sortAsc; } else { sortCol = col; sortAsc = true; }
+            renderProjects();
+        });
+    });
+
+    // Attach row-click to toggle sessions
+    projectsList.querySelectorAll(".project-row").forEach(tr => {
+        tr.addEventListener("click", (e) => {
+            if (e.target.closest("button")) return; // don't toggle when clicking action buttons
+            const id = tr.dataset.id;
+            const sessRow = document.getElementById(`sessions-row-${id}`);
+            sessRow.classList.toggle("hidden");
+        });
     });
 }
 
-function projectCard(p) {
-    const locName = p.location ? esc([p.location.crag, p.location.area].filter(Boolean).join(", ")) : "";
-    const pitchInfo = p.pitches && p.type !== 1 ? `${p.pitches}p` : "";
-    const lengthInfo = p.length ? esc(p.length) : "";
-    const meta = [pitchInfo, lengthInfo].filter(Boolean).join(" · ");
-
-    const sessionsHtml = p.sessions && p.sessions.length
-        ? p.sessions.map(s => `
-          <div class="attempt-item">
-            <span class="session-date">${s.date}</span>
-            <span class="session-style style-${s.style_label.toLowerCase()}">${s.style_label}</span>
-            <span class="session-note">${s.notes ? esc(s.notes) : ""}</span>
-            <span class="session-actions">
-              <button class="btn-icon edit-icon" onclick="editSession(${s.id}, ${p.id})" title="Edit">&#9998;</button>
-              <button class="btn-icon danger" onclick="deleteSession(${s.id}, ${p.id})" title="Delete">✕</button>
-            </span>
-          </div>`).join("")
-        : `<p class="no-sessions">No sessions yet.</p>`;
-
-    return `
-    <div class="route-card" id="project-${p.id}">
-      <div class="route-card-columns">
-        <div class="route-left">
-          <div class="route-header">
-            <span class="status-badge ${STATUS_CLASSES[p.status]}">${STATUS_LABELS[p.status]}</span>
-            <span class="route-title">${esc(p.name)}</span>
-            <span class="route-grade">${esc(p.grade)}</span>
-          </div>
-          <div class="route-meta">
-            <span class="type-badge">${TYPE_LABELS[p.type]}</span>
-            ${locName ? `<span>📍 ${locName}</span>` : ""}
-            ${meta ? `<span>${meta}</span>` : ""}
-          </div>
-          <div class="route-actions">
-            <button class="btn-icon edit-icon" onclick="editProject(${p.id})" title="Edit">&#9998;</button>
-            <button class="btn-icon danger" onclick="deleteProject(${p.id})" title="Delete">✕</button>
-          </div>
-        </div>
-        <div class="route-right">
-          <div class="sessions-header">
-            <h4 class="sessions-heading">Sessions${p.sessions.length ? ` (${p.sessions.length})` : ""}</h4>
-            <button class="btn-icon accent" onclick="openSessionModal(${p.id})" title="Add Session">＋</button>
-          </div>
-          ${sessionsHtml}
-        </div>
-      </div>
-    </div>`;
-}
-
-// ---- Sessions Toggle ----
-async function toggleSessions(projectId) {
-    const section = document.getElementById(`sessions-${projectId}`);
-    if (!section.classList.contains("hidden")) {
-        section.classList.add("hidden");
-        return;
-    }
-    const sessions = await api(`/api/projects/${projectId}/sessions`);
-    if (!sessions.length) {
-        section.innerHTML = `<h3>Sessions</h3><p style="font-size:0.8rem;color:var(--muted)">No sessions logged yet.</p>`;
-    } else {
-        section.innerHTML = `<h3>Sessions (${sessions.length})</h3>` + sessions.map(s => `
-      <div class="attempt-item">
-        <span>${s.date}</span>
-        <span>${s.notes ? esc(s.notes) : ""}</span>
-        <button class="btn-small" onclick="editSession(${s.id}, ${projectId})">Edit</button>
-        <button class="btn-small danger" onclick="deleteSession(${s.id}, ${projectId})">✕</button>
-      </div>`).join("");
-    }
-    section.classList.remove("hidden");
-}
+// ---- Toggle All Sessions ----
+document.getElementById("toggle-all-sessions").addEventListener("click", () => {
+    allExpanded = !allExpanded;
+    document.getElementById("toggle-all-sessions").textContent = allExpanded ? "Hide Sessions" : "Show Sessions";
+    document.querySelectorAll(".sessions-row").forEach(row => {
+        row.classList.toggle("hidden", !allExpanded);
+    });
+});
 
 // ---- Filter Dropdowns ----
 document.getElementById("filter-status").addEventListener("change", (e) => {
@@ -196,6 +297,10 @@ document.getElementById("filter-status").addEventListener("change", (e) => {
 });
 document.getElementById("filter-type").addEventListener("change", (e) => {
     filterType = e.target.value;
+    loadProjects();
+});
+document.getElementById("filter-date").addEventListener("change", (e) => {
+    filterDate = e.target.value;
     loadProjects();
 });
 
@@ -295,6 +400,7 @@ function openSessionModal(projectId) {
     document.getElementById("session-project-id").value = projectId;
     document.getElementById("session-date").value = today();
     document.getElementById("session-style").value = "0";
+    document.getElementById("session-planned").checked = false;
     sessionModal.classList.remove("hidden");
 }
 
@@ -307,6 +413,7 @@ async function editSession(sessionId, projectId) {
     document.getElementById("session-project-id").value = projectId;
     document.getElementById("session-date").value = s.date;
     document.getElementById("session-style").value = s.style;
+    document.getElementById("session-planned").checked = s.planned;
     document.getElementById("session-notes").value = s.notes || "";
     sessionModal.classList.remove("hidden");
 }
@@ -322,6 +429,7 @@ sessionForm.addEventListener("submit", async (e) => {
     const body = {
         date: document.getElementById("session-date").value,
         style: document.getElementById("session-style").value,
+        planned: document.getElementById("session-planned").checked,
         notes: document.getElementById("session-notes").value,
     };
     if (sessionId) {
@@ -344,6 +452,12 @@ const sessionDatePicker = flatpickr("#session-date", {
     dateFormat: "Y-m-d",
     defaultDate: "today",
     theme: "dark",
+    onChange: function (selectedDates) {
+        if (selectedDates.length) {
+            const isFuture = selectedDates[0] > new Date();
+            document.getElementById("session-planned").checked = isFuture;
+        }
+    },
 });
 
 // ---- Init ----
