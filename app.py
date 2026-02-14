@@ -187,4 +187,6 @@ def delete_session(session_id):
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    import glob
+    extra_files = glob.glob("templates/**", recursive=True) + glob.glob("static/**", recursive=True)
+    app.run(debug=True, port=5001, extra_files=extra_files)

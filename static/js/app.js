@@ -174,6 +174,18 @@ document.querySelectorAll(".filter-btn").forEach((btn) => {
     });
 });
 
+// ---- Pitches visibility toggle ----
+const typeSelect = document.getElementById("project-type");
+const pitchesGroup = document.getElementById("pitches-group");
+
+function togglePitches() {
+    const isBoulder = typeSelect.value === "1";
+    pitchesGroup.style.display = isBoulder ? "none" : "";
+    if (isBoulder) document.getElementById("project-pitches").value = "";
+}
+
+typeSelect.addEventListener("change", togglePitches);
+
 // ---- Project Modal ----
 document.getElementById("add-project-btn").addEventListener("click", () => {
     document.getElementById("modal-title").textContent = "Add Project";
@@ -181,6 +193,7 @@ document.getElementById("add-project-btn").addEventListener("click", () => {
     document.getElementById("project-id").value = "";
     document.getElementById("project-type").value = "1";
     document.getElementById("project-status").value = "0";
+    togglePitches();
     projectModal.classList.remove("hidden");
 });
 
@@ -224,6 +237,7 @@ async function editProject(id) {
     document.getElementById("project-length").value = project.length || "";
     document.getElementById("project-location").value = project.location_id || "";
     document.getElementById("project-notes").value = project.notes || "";
+    togglePitches();
     projectModal.classList.remove("hidden");
 }
 

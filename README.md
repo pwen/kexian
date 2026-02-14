@@ -10,19 +10,6 @@ Built with **Flask**, **SQLAlchemy**, **PostgreSQL**, and **Flask-Migrate**.
 - [uv](https://docs.astral.sh/uv/) (recommended) or pip
 - [Docker](https://docs.docker.com/get-docker/) (for running PostgreSQL locally)
 
-## Setup
-
-```bash
-git clone <your-repo-url>
-cd kexian
-
-# Start local Postgres
-make docker-up      # or: docker compose up -d db
-
-# Install deps & run migrations
-make setup
-```
-
 ## Usage
 
 ### Local development (recommended)
