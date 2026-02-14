@@ -1,7 +1,7 @@
 import os
 from datetime import date
 import pycountry
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
 from flask_migrate import Migrate
 from models import db, Project, Session, Location, PROJECT_STATUS, PROJECT_TYPE
 from models.session import STYLE_FLASH, STYLE_SEND
@@ -47,6 +47,12 @@ migrate = Migrate(app, db)
 
 @app.route("/")
 def index():
+    return redirect("/projects")
+
+
+@app.route("/projects")
+@app.route("/ascents")
+def spa_page():
     return render_template("index.html")
 
 

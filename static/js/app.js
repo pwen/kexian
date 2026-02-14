@@ -7,6 +7,48 @@ let filterStatus = "";
 let filterType = "";
 let filterDate = "";
 
+// ---- Tab Routing ----
+function getActiveTab() {
+    const path = window.location.pathname.replace(/\/$/, "");
+    if (path === "/ascents") return "ascents";
+    return "projects";
+}
+
+function switchTab(tab, pushState = true) {
+    // Update nav title
+    const title = tab.charAt(0).toUpperCase() + tab.slice(1);
+    document.getElementById('nav-title').textContent = title.toUpperCase();
+    // Update tab links
+    document.querySelectorAll('.nav-links .tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tab);
+    });
+    // Update tab content
+    document.querySelectorAll(".tab-content").forEach(tc => {
+        tc.classList.toggle("active", tc.id === `tab-${tab}`);
+    });
+    // Update URL
+    if (pushState) {
+        const url = `/${tab}`;
+        history.pushState({ tab }, "", url);
+    }
+}
+
+// Tab click handlers (SPA navigation, no full reload)
+document.querySelectorAll('.nav-links .tab').forEach(tabEl => {
+    tabEl.addEventListener('click', (e) => {
+        e.preventDefault();
+        switchTab(tabEl.dataset.tab);
+    });
+});
+
+// Handle browser back/forward
+window.addEventListener("popstate", () => {
+    switchTab(getActiveTab(), false);
+});
+
+// Set initial tab from URL
+switchTab(getActiveTab(), false);
+
 // Read initial filter state from URL
 (function initFiltersFromURL() {
     const params = new URLSearchParams(window.location.search);

@@ -5,6 +5,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Climbing Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="/static/css/style.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css" />
@@ -12,174 +16,188 @@
 </head>
 
 <body>
-    <header>
-        <h1>🧗 Climbing Tracker</h1>
-        <p class="subtitle">Track your projects, log sessions, celebrate sends.</p>
-    </header>
+    <nav class="site-nav">
+        <h1 id="nav-title" class="nav-title">PROJECTS</h1>
+        <div class="nav-links">
+            <a class="tab active" href="/projects" data-tab="projects">Projects</a>
+            <a class="tab" href="/ascents" data-tab="ascents">Ascents</a>
+        </div>
+    </nav>
 
     <main>
-        <!-- Filters -->
-        <div class="filters">
-            <select id="filter-status" class="filter-select">
-                <option value="">All Status</option>
-                <option value="0">To Try</option>
-                <option value="1">Projecting</option>
-                <option value="2">On Hold</option>
-                <option value="3">Sent</option>
-            </select>
-            <select id="filter-type" class="filter-select">
-                <option value="">All Types</option>
-                <option value="0">Sport</option>
-                <option value="1">Boulder</option>
-                <option value="2">Trad</option>
-            </select>
-            <select id="filter-date" class="filter-select">
-                <option value="">All Time</option>
-                <option value="ytd">YTD</option>
-            </select>
-            <button class="btn-secondary" id="toggle-all-sessions">Show Sessions</button>
-            <button class="btn-primary" id="add-project-btn">+ Add Project</button>
-        </div>
+        <!-- ===== Projects Tab ===== -->
+        <div id="tab-projects" class="tab-content active">
+            <!-- Filters -->
+            <div class="filters">
+                <select id="filter-status" class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="0">To Try</option>
+                    <option value="1">Projecting</option>
+                    <option value="2">On Hold</option>
+                    <option value="3">Sent</option>
+                </select>
+                <select id="filter-type" class="filter-select">
+                    <option value="">All Types</option>
+                    <option value="0">Sport</option>
+                    <option value="1">Boulder</option>
+                    <option value="2">Trad</option>
+                </select>
+                <select id="filter-date" class="filter-select">
+                    <option value="">All Time</option>
+                    <option value="ytd">YTD</option>
+                </select>
+                <button class="btn-secondary" id="toggle-all-sessions">Show Sessions</button>
+                <button class="btn-primary" id="add-project-btn">+ Add Project</button>
+            </div>
 
-        <!-- Project list -->
-        <div id="projects-list" class="routes-list"></div>
+            <!-- Project list -->
+            <div id="projects-list" class="routes-list"></div>
 
-        <!-- Add / Edit Project Modal -->
-        <div id="project-modal" class="modal hidden">
-            <div class="modal-content">
-                <h2 id="modal-title">Add Project</h2>
-                <form id="project-form">
-                    <input type="hidden" id="project-id" />
-                    <label>Name *
-                        <input type="text" id="project-name" required />
-                    </label>
-                    <label>Grade *
-                        <select id="project-grade-rope" class="hidden">
-                            <option value="5.11a">5.11a</option>
-                            <option value="5.11b">5.11b</option>
-                            <option value="5.11c">5.11c</option>
-                            <option value="5.11d">5.11d</option>
-                            <option value="5.12a">5.12a</option>
-                            <option value="5.12b">5.12b</option>
-                            <option value="5.12c">5.12c</option>
-                            <option value="5.12d">5.12d</option>
-                            <option value="5.13a">5.13a</option>
-                            <option value="5.13b">5.13b</option>
-                            <option value="5.13c">5.13c</option>
-                            <option value="5.13d">5.13d</option>
-                        </select>
-                        <select id="project-grade-boulder" class="hidden">
-                            <option value="V0">V0</option>
-                            <option value="V1">V1</option>
-                            <option value="V2">V2</option>
-                            <option value="V3">V3</option>
-                            <option value="V4">V4</option>
-                            <option value="V5">V5</option>
-                            <option value="V6">V6</option>
-                            <option value="V7">V7</option>
-                            <option value="V8">V8</option>
-                            <option value="V9">V9</option>
-                            <option value="V10">V10</option>
-                        </select>
-                    </label>
-                    <label>Type
-                        <select id="project-type">
-                            <option value="0">Sport</option>
-                            <option value="1" selected>Boulder</option>
-                            <option value="2">Trad</option>
-                        </select>
-                    </label>
-                    <label>Status
-                        <select id="project-status">
-                            <option value="0">To Try</option>
-                            <option value="1">Projecting</option>
-                            <option value="2">On Hold</option>
-                            <option value="3">Sent</option>
-                        </select>
-                    </label>
-                    <div id="pitches-group">
-                        <label>Pitches <span class="hint">(sport/trad only)</span>
-                            <input type="number" id="project-pitches" min="1" placeholder="1" />
+            <!-- Add / Edit Project Modal -->
+            <div id="project-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="modal-title">Add Project</h2>
+                    <form id="project-form">
+                        <input type="hidden" id="project-id" />
+                        <label>Name *
+                            <input type="text" id="project-name" required />
                         </label>
-                    </div>
-                    <label>Length
-                        <input type="text" id="project-length" placeholder="e.g. 30m, 100ft" />
-                    </label>
-                    <label>Location
-                        <div class="location-row">
-                            <select id="project-location">
+                        <label>Grade *
+                            <select id="project-grade-rope" class="hidden">
+                                <option value="5.11a">5.11a</option>
+                                <option value="5.11b">5.11b</option>
+                                <option value="5.11c">5.11c</option>
+                                <option value="5.11d">5.11d</option>
+                                <option value="5.12a">5.12a</option>
+                                <option value="5.12b">5.12b</option>
+                                <option value="5.12c">5.12c</option>
+                                <option value="5.12d">5.12d</option>
+                                <option value="5.13a">5.13a</option>
+                                <option value="5.13b">5.13b</option>
+                                <option value="5.13c">5.13c</option>
+                                <option value="5.13d">5.13d</option>
+                            </select>
+                            <select id="project-grade-boulder" class="hidden">
+                                <option value="V0">V0</option>
+                                <option value="V1">V1</option>
+                                <option value="V2">V2</option>
+                                <option value="V3">V3</option>
+                                <option value="V4">V4</option>
+                                <option value="V5">V5</option>
+                                <option value="V6">V6</option>
+                                <option value="V7">V7</option>
+                                <option value="V8">V8</option>
+                                <option value="V9">V9</option>
+                                <option value="V10">V10</option>
+                            </select>
+                        </label>
+                        <label>Type
+                            <select id="project-type">
+                                <option value="0">Sport</option>
+                                <option value="1" selected>Boulder</option>
+                                <option value="2">Trad</option>
+                            </select>
+                        </label>
+                        <label>Status
+                            <select id="project-status">
+                                <option value="0">To Try</option>
+                                <option value="1">Projecting</option>
+                                <option value="2">On Hold</option>
+                                <option value="3">Sent</option>
+                            </select>
+                        </label>
+                        <div id="pitches-group">
+                            <label>Pitches <span class="hint">(sport/trad only)</span>
+                                <input type="number" id="project-pitches" min="1" placeholder="1" />
+                            </label>
+                        </div>
+                        <label>Length
+                            <input type="text" id="project-length" placeholder="e.g. 30m, 100ft" />
+                        </label>
+                        <label>Location
+                            <div class="location-row">
+                                <select id="project-location">
+                                    <option value="">— None —</option>
+                                </select>
+                                <button type="button" class="btn-small" id="new-location-btn">+ New</button>
+                            </div>
+                        </label>
+                        <div class="modal-actions">
+                            <button type="submit" class="btn-primary">Save</button>
+                            <button type="button" class="btn-secondary" id="cancel-project">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Session Modal -->
+            <div id="session-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="session-modal-title">Log Session</h2>
+                    <form id="session-form">
+                        <input type="hidden" id="session-id" />
+                        <input type="hidden" id="session-project-id" />
+                        <label>Date
+                            <input type="date" id="session-date" />
+                        </label>
+                        <label>Style
+                            <select id="session-style">
+                                <option value="0">Attempt</option>
+                                <option value="1">Flash</option>
+                                <option value="2">Send</option>
+                            </select>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="session-planned" />
+                            Planned (hasn't happened yet)
+                        </label>
+                        <label>Notes
+                            <textarea id="session-notes" rows="6"></textarea>
+                        </label>
+                        <div class="modal-actions">
+                            <button type="submit" class="btn-primary">Log</button>
+                            <button type="button" class="btn-secondary" id="cancel-session">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Location Modal -->
+            <div id="location-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2>Add Location</h2>
+                    <form id="location-form">
+                        <label>Country *
+                            <select id="loc-country" required>
+                                <option value="">Select country…</option>
+                            </select>
+                        </label>
+                        <label>State / Province
+                            <select id="loc-state">
                                 <option value="">— None —</option>
                             </select>
-                            <button type="button" class="btn-small" id="new-location-btn">+ New</button>
+                        </label>
+                        <label>Area * <span class="hint">(e.g. Bishop, Rocklands)</span>
+                            <input type="text" id="loc-area" required />
+                        </label>
+                        <label>Crag <span class="hint">(e.g. Buttermilks)</span>
+                            <input type="text" id="loc-crag" />
+                        </label>
+                        <div class="modal-actions">
+                            <button type="submit" class="btn-primary">Save Location</button>
+                            <button type="button" class="btn-secondary" id="cancel-location">Cancel</button>
                         </div>
-                    </label>
-                    <div class="modal-actions">
-                        <button type="submit" class="btn-primary">Save</button>
-                        <button type="button" class="btn-secondary" id="cancel-project">Cancel</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
+        </div><!-- /tab-projects -->
 
-        <!-- Session Modal -->
-        <div id="session-modal" class="modal hidden">
-            <div class="modal-content">
-                <h2 id="session-modal-title">Log Session</h2>
-                <form id="session-form">
-                    <input type="hidden" id="session-id" />
-                    <input type="hidden" id="session-project-id" />
-                    <label>Date
-                        <input type="date" id="session-date" />
-                    </label>
-                    <label>Style
-                        <select id="session-style">
-                            <option value="0">Attempt</option>
-                            <option value="1">Flash</option>
-                            <option value="2">Send</option>
-                        </select>
-                    </label>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="session-planned" />
-                        Planned (hasn't happened yet)
-                    </label>
-                    <label>Notes
-                        <textarea id="session-notes" rows="6"></textarea>
-                    </label>
-                    <div class="modal-actions">
-                        <button type="submit" class="btn-primary">Log</button>
-                        <button type="button" class="btn-secondary" id="cancel-session">Cancel</button>
-                    </div>
-                </form>
+        <!-- ===== Ascents Tab ===== -->
+        <div id="tab-ascents" class="tab-content">
+            <div class="ascents-placeholder">
+                <h2>Ascents</h2>
+                <p>Your send log and stats will appear here.</p>
             </div>
-        </div>
-        <!-- Location Modal -->
-        <div id="location-modal" class="modal hidden">
-            <div class="modal-content">
-                <h2>Add Location</h2>
-                <form id="location-form">
-                    <label>Country *
-                        <select id="loc-country" required>
-                            <option value="">Select country…</option>
-                        </select>
-                    </label>
-                    <label>State / Province
-                        <select id="loc-state">
-                            <option value="">— None —</option>
-                        </select>
-                    </label>
-                    <label>Area * <span class="hint">(e.g. Bishop, Rocklands)</span>
-                        <input type="text" id="loc-area" required />
-                    </label>
-                    <label>Crag <span class="hint">(e.g. Buttermilks)</span>
-                        <input type="text" id="loc-crag" />
-                    </label>
-                    <div class="modal-actions">
-                        <button type="submit" class="btn-primary">Save Location</button>
-                        <button type="button" class="btn-secondary" id="cancel-location">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        </div><!-- /tab-ascents -->
     </main>
 
     <script src="/static/js/app.js"></script>
