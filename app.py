@@ -25,10 +25,16 @@ def sync_project_status(project_id):
     db.session.commit()
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+
+# Railway uses postgres:// but SQLAlchemy needs postgresql://
+_db_url = os.environ.get(
     "DATABASE_URL",
     "postgresql://kexian:kexian@localhost:5432/kexian",
 )
+if _db_url.startswith("postgres://"):
+    _db_url = _db_url.replace("postgres://", "postgresql://", 1)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = _db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)

@@ -56,3 +56,15 @@ make db-dump url="postgres://user:pass@host:5432/dbname"
 # Load it into your local Postgres
 make db-restore
 ```
+
+## Deploy to Railway
+
+1. Push this repo to GitHub
+2. Go to [railway.app](https://railway.app) and sign in with GitHub
+3. Click **New Project → Deploy from GitHub Repo** and select this repo
+4. Add a **Postgres** service: click **New → Database → PostgreSQL**
+5. Railway auto-sets `DATABASE_URL` — the app picks it up automatically
+6. The first deploy runs migrations via the Dockerfile CMD
+7. Go to **Settings → Networking → Generate Domain** to get your public URL
+
+That's it! Every `git push` auto-deploys. Railway's Postgres includes daily backups with 7-day retention.
