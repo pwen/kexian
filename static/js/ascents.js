@@ -152,7 +152,7 @@ function showDrillDown(bucketLabel, typeCodes, bucketFn) {
 
     title.textContent = `${bucketLabel}  (${matches.length})`;
     list.innerHTML = matches.map(d => {
-        const loc = d.location ? d.location.state_name || d.location.crag : "";
+        const loc = d.location ? d.location.state_short || d.location.state_name || d.location.crag : "";
         const locSpan = loc ? `<span class="ad-loc">${loc}</span>` : "";
         const styleClass = d.style_label === "Flash" ? "flash" : d.style_label === "Send" ? "send" : "attempt";
         return `<li class="ad-item">

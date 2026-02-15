@@ -4,8 +4,8 @@
 
 import { api, apiBase, isOwner, profileUser, esc } from "./api.js";
 import {
-    filterStatus, filterType, filterDate,
-    setFilterStatus, setFilterType, setFilterDate,
+    filterStatus, filterType, filterState, filterDate,
+    setFilterStatus, setFilterType, setFilterState, setFilterDate,
     updateURL, syncStatusButtons,
 } from "./router.js";
 import { openSessionModal, editSession, deleteSession } from "./sessions.js";
@@ -23,6 +23,7 @@ let sortCol = "status";
 let sortAsc = true;
 let allExpanded = false;
 let dateFilterYears = [];
+let stateFilterOptions = [];
 
 // Expose actions to inline onclick handlers
 window.editProject = editProject;
@@ -46,6 +47,17 @@ async function populateDateFilter() {
     sel.value = filterDate;
 }
 
+async function populateStateFilter() {
+    if (!profileUser) return;
+    const states = await api(`${apiBase()}/project-states`);
+    if (JSON.stringify(states) === JSON.stringify(stateFilterOptions)) return;
+    stateFilterOptions = states;
+    const sel = document.getElementById("filter-state");
+    sel.innerHTML = `<option value="">All States</option>`
+        + states.map(s => `<option value="${s.state_name}">${s.state_short}</option>`).join("");
+    sel.value = filterState;
+}
+
 // ---------------------------------------------------------------------------
 // Load & Render
 // ---------------------------------------------------------------------------
@@ -55,6 +67,7 @@ export async function loadProjects() {
     const params = new URLSearchParams();
     if (filterStatus !== "") params.set("status", filterStatus);
     if (filterType !== "") params.set("type", filterType);
+    if (filterState !== "") params.set("state", filterState);
     if (filterDate !== "") params.set("date", filterDate);
     const qs = params.toString() ? `?${params}` : "";
     allProjects = await api(`${apiBase()}/projects${qs}`);
@@ -144,7 +157,7 @@ function renderProjects() {
       </tr></thead><tbody>`;
 
     for (const p of sorted) {
-        const locName = p.location ? esc([p.location.crag, p.location.state_name].filter(Boolean).join(", ")) : "";
+        const locName = p.location ? esc([p.location.crag, p.location.state_short || p.location.state_name].filter(Boolean).join(", ")) : "";
         const realSessions = p.sessions ? p.sessions.filter(s => !s.planned) : [];
         const plannedSessions = p.sessions ? p.sessions.filter(s => s.planned) : [];
         const lastDate = realSessions.length ? realSessions[0].date : "";
@@ -345,12 +358,17 @@ export function initProjects() {
         setFilterType(e.target.value);
         loadProjects();
     });
+    document.getElementById("filter-state").addEventListener("change", (e) => {
+        setFilterState(e.target.value);
+        loadProjects();
+    });
     document.getElementById("filter-date").addEventListener("change", (e) => {
         setFilterDate(e.target.value);
         loadProjects();
     });
 
-    // Populate date filter & load
+    // Populate async filters & load
     populateDateFilter();
+    populateStateFilter();
     loadProjects();
 }

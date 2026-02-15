@@ -107,8 +107,8 @@ function daySummary(entries) {
 function dayLocation(entries) {
     const states = new Set();
     for (const e of entries) {
-        if (e.location && e.location.state_name) {
-            states.add(e.location.state_name);
+        if (e.location && (e.location.state_short || e.location.state_name)) {
+            states.add(e.location.state_short || e.location.state_name);
         }
     }
     if (!states.size) return "";

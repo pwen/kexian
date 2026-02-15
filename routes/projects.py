@@ -1,6 +1,6 @@
 from datetime import date
 from flask import Blueprint, request, jsonify
-from models import db, Project, Session, PROJECT_STATUS, PROJECT_TYPE
+from models import db, Project, Session, Location, PROJECT_STATUS, PROJECT_TYPE
 from models.session import STYLE_FLASH, STYLE_SEND
 from datetime import timedelta
 from routes import _get_user_or_404, _require_owner
@@ -68,6 +68,7 @@ def list_projects(username):
         return err
     status_param = request.args.get("status", type=str)
     climb_type = request.args.get("type", type=int)
+    state_filter = request.args.get("state", type=str)
     date_filter = request.args.get("date", type=str)
     query = Project.query.filter_by(user_id=user.id).order_by(Project.created_at.desc())
     if status_param:
@@ -76,6 +77,12 @@ def list_projects(username):
             query = query.filter(Project.status.in_(statuses))
     if climb_type is not None:
         query = query.filter_by(type=climb_type)
+    if state_filter:
+        state_names = [s.strip() for s in state_filter.split(",") if s.strip()]
+        if state_names:
+            query = query.filter(
+                Project.location.has(Location.state_name.in_(state_names))
+            )
     if date_filter:
         if date_filter == "ytd":
             start = date(date.today().year, 1, 1)
@@ -92,6 +99,28 @@ def list_projects(username):
                 )
             )
     return jsonify([p.to_dict() for p in query.all()])
+
+
+@bp.route("/api/<username>/project-states", methods=["GET"])
+def project_states(username):
+    """Return distinct states used by this user's projects, with short labels."""
+    user, err = _get_user_or_404(username)
+    if err:
+        return err
+    locs = (
+        db.session.query(Location.state_name, Location.state_code)
+        .join(Project, Project.location_id == Location.id)
+        .filter(Project.user_id == user.id, Location.state_name != "")
+        .distinct()
+        .order_by(Location.state_name)
+        .all()
+    )
+    results = []
+    for state_name, state_code in locs:
+        # Build a temporary location-like object to reuse state_short logic
+        loc = Location(state_name=state_name, state_code=state_code)
+        results.append({"state_name": state_name, "state_short": loc.state_short})
+    return jsonify(results)
 
 
 @bp.route("/api/<username>/session-years", methods=["GET"])

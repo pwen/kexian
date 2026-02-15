@@ -52,6 +52,7 @@ def _session_to_dict(session, project):
         "location": {
             "crag": loc.crag if loc else "",
             "state_name": loc.state_name if loc else "",
+            "state_short": loc.state_short if loc else "",
         } if loc else None,
         "notes": session.notes or "",
     }

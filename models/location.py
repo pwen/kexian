@@ -16,6 +16,20 @@ class Location(db.Model):
 
     projects = db.relationship("Project", backref="location", lazy=True)
 
+    @property
+    def state_short(self):
+        """Concise state label: 'CO' for US-CO, first word for long intl names."""
+        if not self.state_name:
+            return ""
+        # US / CA / AU etc. – use the part after the dash in state_code
+        if self.state_code and "-" in self.state_code:
+            suffix = self.state_code.split("-", 1)[1]
+            # If suffix is 2-3 uppercase letters it's a good abbreviation
+            if suffix.isalpha() and len(suffix) <= 3:
+                return suffix.upper()
+        # Fallback: first word of the state name (handles long intl names)
+        return self.state_name.split()[0]
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -23,6 +37,7 @@ class Location(db.Model):
             "country_name": self.country_name,
             "state_code": self.state_code,
             "state_name": self.state_name,
+            "state_short": self.state_short,
             "area": self.area,
             "crag": self.crag,
         }

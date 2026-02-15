@@ -6,10 +6,12 @@ import { profileUser } from "./api.js";
 
 export let filterStatus = "";
 export let filterType = "";
+export let filterState = "";
 export let filterDate = "";
 
 export function setFilterStatus(v) { filterStatus = v; }
 export function setFilterType(v) { filterType = v; }
+export function setFilterState(v) { filterState = v; }
 export function setFilterDate(v) { filterDate = v; }
 
 export function getActiveTab() {
@@ -64,6 +66,7 @@ export function updateURL() {
     const params = new URLSearchParams();
     if (filterStatus) params.set("status", filterStatus);
     if (filterType) params.set("type", filterType);
+    if (filterState) params.set("state", filterState);
     if (filterDate) params.set("date", filterDate);
     const qs = params.toString() ? `?${params}` : "";
     history.replaceState(null, "", `${window.location.pathname}${qs}`);
@@ -90,8 +93,9 @@ export function initRouter() {
     const params = new URLSearchParams(window.location.search);
     filterStatus = params.get("status") || "";
     filterType = params.get("type") || "";
+    filterState = params.get("state") || "";
     filterDate = params.get("date") || "";
     syncStatusButtons();
     document.getElementById("filter-type").value = filterType;
-    // filter-date is populated async, set after populateDateFilter
+    // filter-state and filter-date are populated async
 }
