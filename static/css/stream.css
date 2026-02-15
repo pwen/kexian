@@ -1,4 +1,4 @@
-/* ---------- Stream Tab – Timeline ---------- */
+/* ---------- Stream Tab – Timeline (theCrag style) ---------- */
 
 .stream-controls {
   margin-bottom: 16px;
@@ -14,93 +14,136 @@
   font-size: 12px;
 }
 
+/* Month header */
 .stream-month-header {
   display: flex;
   align-items: baseline;
   gap: 12px;
   padding: 12px 0 6px;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
-
 .stream-month-name {
   font-size: 16px;
   font-weight: 600;
   color: var(--text);
 }
-
 .stream-month-summary {
   font-size: 12px;
   color: var(--muted);
 }
-
 .stream-month-entries {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
-.stream-entry {
+/* Day group — date on left, timeline line, content on right */
+.stream-day {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 6px 0;
-  flex-wrap: wrap;
-  border-bottom: 1px solid var(--surface);
+  gap: 0;
+  min-height: 60px;
 }
 
-.stream-date {
-  font-size: 12px;
+/* Date column (left side) */
+.stream-day-date {
+  width: 56px;
+  flex-shrink: 0;
+  text-align: center;
+  padding-top: 4px;
+  border-right: 2px solid var(--border);
+  padding-right: 12px;
+  margin-right: 16px;
+  padding-bottom: 16px;
+  position: relative;
+}
+.stream-day-date::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  top: 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+}
+.stream-day-name {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
   color: var(--muted);
-  min-width: 52px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.stream-day-num {
+  display: block;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+}
+.stream-day-month {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* Content column (right side) */
+.stream-day-content {
+  flex: 1;
+  padding-bottom: 16px;
+  min-width: 0;
+}
+.stream-day-summary {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+.stream-day-summary strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Individual items within a day */
+.stream-day-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stream-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 3px 0;
+}
+
+.stream-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
   flex-shrink: 0;
 }
+.stream-dot.send    { background: #22c55e; }
+.stream-dot.flash   { background: #eab308; }
+.stream-dot.attempt { background: #71717a; }
 
-.stream-style {
+.stream-grade-badge {
+  background: var(--accent);
+  color: #fff;
   font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
+  font-weight: 700;
   padding: 1px 6px;
   border-radius: 4px;
-  flex-shrink: 0;
+  white-space: nowrap;
 }
-.stream-style.send {
-  background: rgba(34,197,94,0.15);
-  color: #22c55e;
-}
-.stream-style.flash {
-  background: rgba(234,179,8,0.15);
-  color: #eab308;
-}
-.stream-style.attempt {
-  background: rgba(161,161,170,0.15);
-  color: #a1a1aa;
-}
-
-.stream-project {
-  font-size: 13px;
+.stream-project-name {
   font-weight: 500;
   color: var(--text);
 }
 
-.stream-grade {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--accent);
-}
-
-.stream-location {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.stream-entry-notes {
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  color: var(--muted);
-  padding-left: 60px;
-  margin-top: 2px;
-}
-
+/* Empty */
 #stream-list .empty-msg {
   color: var(--muted);
   font-size: 13px;
