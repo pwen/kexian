@@ -8,6 +8,7 @@ let boulderChart = null;
 let routeChart = null;
 let ascentsYear = "";          // "" = all time, "ytd", or "2025"
 let yearOptions = [];
+let lastAscentsData = [];      // cache for drill-down
 
 // ---------------------------------------------------------------------------
 // Grade bucket helpers
@@ -71,7 +72,7 @@ function buildCounts(data, grades, typeCodes, bucketFn) {
     return grades.map(g => counts[g]);
 }
 
-function makeChart(canvasId, labels, data, color, title) {
+function makeChart(canvasId, labels, data, color, title, onClick) {
     const ctx = document.getElementById(canvasId);
     if (!ctx) return null;
 
@@ -89,6 +90,12 @@ function makeChart(canvasId, labels, data, color, title) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            onClick: (event, elements) => {
+                if (elements.length > 0 && onClick) {
+                    const idx = elements[0].index;
+                    onClick(labels[idx]);
+                }
+            },
             plugins: {
                 legend: { display: false },
                 title: {
@@ -126,22 +133,66 @@ function makeChart(canvasId, labels, data, color, title) {
 }
 
 // ---------------------------------------------------------------------------
+// Drill-down modal
+// ---------------------------------------------------------------------------
+
+function showDrillDown(bucketLabel, typeCodes, bucketFn) {
+    const matches = lastAscentsData
+        .filter(d => typeCodes.includes(d.type))
+        .filter(d => {
+            const key = bucketFn ? bucketFn(d.grade) : d.grade;
+            return key === bucketLabel;
+        })
+        .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+
+    const title = document.getElementById("ascent-detail-title");
+    const list = document.getElementById("ascent-detail-list");
+    const modal = document.getElementById("ascent-detail-modal");
+    if (!title || !list || !modal) return;
+
+    title.textContent = `${bucketLabel}  (${matches.length})`;
+    list.innerHTML = matches.map(d => {
+        const loc = d.location ? d.location.state_name || d.location.crag : "";
+        const locSpan = loc ? `<span class="ad-loc">${loc}</span>` : "";
+        const styleClass = d.style_label === "Flash" ? "flash" : d.style_label === "Send" ? "send" : "attempt";
+        return `<li class="ad-item">
+            <span class="ad-name">${d.project_name}</span>
+            <span class="ad-grade">${d.grade}</span>
+            <span class="ad-style ${styleClass}">${d.style_label}</span>
+            ${locSpan}
+            <span class="ad-date">${d.date || ""}</span>
+        </li>`;
+    }).join("");
+
+    modal.classList.remove("hidden");
+}
+
+// Close modal on backdrop click
+document.addEventListener("click", (e) => {
+    const modal = document.getElementById("ascent-detail-modal");
+    if (modal && e.target === modal) modal.classList.add("hidden");
+});
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
 export async function renderAscentsTab() {
     await fetchYears();
     const data = await fetchAscents();
+    lastAscentsData = data;
 
     // Boulder chart
     const boulderCounts = buildCounts(data, BOULDER_GRADES, [1], null);
     if (boulderChart) boulderChart.destroy();
-    boulderChart = makeChart("chart-boulders", BOULDER_GRADES, boulderCounts, "#22c55e", "Boulders by Grade");
+    boulderChart = makeChart("chart-boulders", BOULDER_GRADES, boulderCounts, "#22c55e", "Boulders by Grade",
+        (label) => showDrillDown(label, [1], null));
 
     // Route chart
     const routeCounts = buildCounts(data, ROUTE_BUCKETS, [0, 2], routeBucket);
     if (routeChart) routeChart.destroy();
-    routeChart = makeChart("chart-routes", ROUTE_BUCKETS, routeCounts, "#ef4444", "Rock Routes by Grade");
+    routeChart = makeChart("chart-routes", ROUTE_BUCKETS, routeCounts, "#ef4444", "Rock Routes by Grade",
+        (label) => showDrillDown(label, [0, 2], routeBucket));
 }
 
 export function initAscents() {

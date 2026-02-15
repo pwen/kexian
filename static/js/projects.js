@@ -124,10 +124,10 @@ function renderProjects() {
     let html = `<table class="projects-table">
       <colgroup>
         <col style="width:11%">
-        <col style="width:${owner ? '17%' : '21%'}">
+        <col style="width:${owner ? '16%' : '20%'}">
         <col style="width:8%">
-        <col style="width:7%">
-        <col style="width:${owner ? '17%' : '21%'}">
+        <col style="width:9%">
+        <col style="width:${owner ? '16%' : '20%'}">
         <col style="width:${owner ? '12%' : '16%'}">
         <col style="width:${owner ? '12%' : '16%'}">
         ${owner ? '<col style="width:16%">' : ''}

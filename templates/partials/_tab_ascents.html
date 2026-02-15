@@ -14,4 +14,16 @@
             <canvas id="chart-routes"></canvas>
         </div>
     </div>
+
+    <!-- Drill-down modal -->
+    <div id="ascent-detail-modal" class="modal hidden">
+        <div class="modal-content ascent-detail-content">
+            <h2 id="ascent-detail-title"></h2>
+            <ul id="ascent-detail-list" class="ascent-detail-list"></ul>
+            <div class="modal-actions">
+                <button class="btn-secondary"
+                    onclick="document.getElementById('ascent-detail-modal').classList.add('hidden')">Close</button>
+            </div>
+        </div>
+    </div>
 </div><!-- /tab-ascents -->
