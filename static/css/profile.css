@@ -1,0 +1,31 @@
+/* ---------- Profile Tab ---------- */
+.profile-card {
+  max-width: 400px;
+  margin: 2rem auto;
+}
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--surface);
+}
+.profile-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+.profile-form label {
+  display: block;
+  margin-bottom: 1rem;
+}
+.profile-saved {
+  color: var(--green);
+  font-size: 13px;
+  margin-top: 0.5rem;
+}

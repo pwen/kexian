@@ -19,6 +19,7 @@ def index():
 
 @bp.route("/<username>/projects")
 @bp.route("/<username>/ascents")
+@bp.route("/<username>/stream")
 @bp.route("/<username>/locations")
 @bp.route("/<username>/profile")
 def spa_page(username):

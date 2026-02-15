@@ -1,0 +1,31 @@
+/* ---------- Ascents Tab – Charts ---------- */
+
+.ascents-controls {
+  margin-bottom: 16px;
+}
+
+.ascents-controls select {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+.ascents-charts {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.chart-container {
+  flex: 1 1 400px;
+  min-width: 300px;
+  height: 320px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}

@@ -30,9 +30,11 @@ def register_blueprints(app):
     from routes.projects import bp as projects_bp
     from routes.sessions import bp as sessions_bp
     from routes.locations import bp as locations_bp
+    from routes.ascents import bp as ascents_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(pages_bp)
     app.register_blueprint(projects_bp)
     app.register_blueprint(sessions_bp)
     app.register_blueprint(locations_bp)
+    app.register_blueprint(ascents_bp)

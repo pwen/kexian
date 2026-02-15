@@ -1,0 +1,59 @@
+/* ---------- Webfont ---------- */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+input, select, textarea, button { font-family: inherit; }
+
+:root {
+  --bg:        #09090b;
+  --surface:   #18181b;
+  --border:    #27272a;
+  --text:      #fafafa;
+  --muted:     #a1a1aa;
+  --accent:    #3b82f6;
+  --accent-hover: #60a5fa;
+  --green:     #22c55e;
+  --yellow:    #eab308;
+  --red:       #ef4444;
+  --radius:    8px;
+}
+
+body {
+  font-family: 'JetBrains Mono', 'Menlo', 'Consolas', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- Tab Content ---------- */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ---------- Main ---------- */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+/* ---------- Utilities ---------- */
+.hidden { display: none !important; }
+
+.hint {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* ---------- Empty state ---------- */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+}
+.empty-state p { font-size: 15px; }

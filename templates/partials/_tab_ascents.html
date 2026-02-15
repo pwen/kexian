@@ -1,7 +1,17 @@
 <!-- ===== Ascents Tab ===== -->
 <div id="tab-ascents" class="tab-content">
-    <div class="ascents-placeholder">
-        <h2>Ascents</h2>
-        <p>Your send log and stats will appear here.</p>
+    <div class="ascents-controls">
+        <select id="ascents-year">
+            <option value="">All Time</option>
+            <option value="ytd">YTD</option>
+        </select>
+    </div>
+    <div class="ascents-charts">
+        <div class="chart-container">
+            <canvas id="chart-boulders"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="chart-routes"></canvas>
+        </div>
     </div>
 </div><!-- /tab-ascents -->

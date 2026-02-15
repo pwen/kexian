@@ -1,0 +1,61 @@
+/* ---------- Site Nav ---------- */
+.site-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+.nav-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+.nav-links .tab {
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  text-transform: capitalize;
+  transition: color 0.15s;
+  cursor: pointer;
+}
+.nav-links .tab:hover {
+  color: var(--text);
+}
+.nav-links .tab.active {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ---------- Auth Nav ---------- */
+.nav-separator {
+  color: var(--border);
+  font-weight: 300;
+  user-select: none;
+}
+.nav-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.nav-user {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-user:hover {
+  color: var(--accent);
+}

@@ -1,0 +1,177 @@
+/* ---------- Filters ---------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+.filter-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.15s;
+}
+.filter-btn:hover, .filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.filter-select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: var(--accent-hover); }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 15px;
+}
+.btn-secondary:hover { border-color: var(--muted); }
+
+.btn-small {
+  font-size: 13px;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.btn-small:hover { border-color: var(--accent); color: var(--accent); }
+.btn-small.accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-small.accent:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-small.danger:hover { border-color: var(--red); color: var(--red); }
+
+.btn-icon {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+  font-size: 15px;
+  cursor: pointer;
+  line-height: 1;
+}
+.btn-icon:hover { border-color: var(--accent); color: var(--accent); }
+.btn-icon.edit-icon { transform: scaleX(-1); }
+.btn-icon.accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-icon.accent:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-icon.danger:hover { border-color: var(--red); color: var(--red); }
+
+/* ---------- Modal ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 100;
+}
+.modal.hidden { display: none; }
+.modal-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+}
+.modal-content h2 { margin-bottom: 1rem; font-size: 21px; font-weight: 600; }
+
+.modal-content label {
+  display: block;
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 16px;
+}
+.modal-content input:focus,
+.modal-content select:focus,
+.modal-content textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: flex-end;
+}
+.checkbox-label {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+/* ---------- Auth Modals ---------- */
+.modal-narrow {
+  max-width: 380px;
+}
+.form-error {
+  color: var(--red);
+  font-size: 13px;
+  margin-top: 0.25rem;
+}
+.modal-footer-text {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 13px;
+  color: var(--muted);
+}
+.modal-footer-text a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.modal-footer-text a:hover {
+  text-decoration: underline;
+}

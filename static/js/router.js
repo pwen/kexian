@@ -15,6 +15,7 @@ export function setFilterDate(v) { filterDate = v; }
 export function getActiveTab() {
     const path = window.location.pathname.replace(/\/$/, "");
     if (path.endsWith("/ascents")) return "ascents";
+    if (path.endsWith("/stream")) return "stream";
     if (path.endsWith("/locations")) return "locations";
     if (path.endsWith("/profile")) return "profile";
     return "projects";

@@ -1,0 +1,30 @@
+/* ---------- Locations Tab ---------- */
+.locations-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+.locations-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+}
+.locations-table thead th {
+  text-align: left;
+  padding: 0.7rem 0.85rem;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.locations-table tbody td {
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.locations-table tbody tr:hover td {
+  background: rgba(59,130,246,0.06);
+}
