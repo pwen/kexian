@@ -6,7 +6,7 @@ import { api, apiBase, isOwner, profileUser, esc } from "./api.js";
 import {
     filterStatus, filterType, filterState, filterDate,
     setFilterStatus, setFilterType, setFilterState, setFilterDate,
-    updateURL, syncStatusButtons,
+    updateURL, syncStatusButtons, syncStateButtons,
 } from "./router.js";
 import { openSessionModal, editSession, deleteSession } from "./sessions.js";
 
@@ -52,10 +52,21 @@ async function populateStateFilter() {
     const states = await api(`${apiBase()}/project-states`);
     if (JSON.stringify(states) === JSON.stringify(stateFilterOptions)) return;
     stateFilterOptions = states;
-    const sel = document.getElementById("filter-state");
-    sel.innerHTML = `<option value="">All States</option>`
-        + states.map(s => `<option value="${s.state_name}">${s.state_short}</option>`).join("");
-    sel.value = filterState;
+    const wrap = document.getElementById("filter-state");
+    const dropdown = wrap.querySelector(".multi-select-dropdown");
+    dropdown.innerHTML = states.map(s =>
+        `<label class="multi-select-option"><input type="checkbox" value="${s.state_name}"><span>${s.state_short}</span></label>`
+    ).join("");
+    // Attach change listeners to new checkboxes
+    dropdown.querySelectorAll("input[type=checkbox]").forEach(cb => {
+        cb.addEventListener("change", () => {
+            const checked = [...dropdown.querySelectorAll("input:checked")].map(c => c.value);
+            setFilterState(checked.join(","));
+            syncStateButtons();
+            loadProjects();
+        });
+    });
+    syncStateButtons();
 }
 
 // ---------------------------------------------------------------------------
@@ -342,6 +353,7 @@ export function initProjects() {
     const statusDropdown = statusWrap.querySelector(".multi-select-dropdown");
     statusTrigger.addEventListener("click", (e) => {
         e.stopPropagation();
+        document.querySelector("#filter-state .multi-select-dropdown")?.classList.add("hidden");
         statusDropdown.classList.toggle("hidden");
     });
     statusDropdown.addEventListener("click", (e) => e.stopPropagation());
@@ -353,15 +365,24 @@ export function initProjects() {
             loadProjects();
         });
     });
-    document.addEventListener("click", () => statusDropdown.classList.add("hidden"));
+    document.addEventListener("click", () => {
+        statusDropdown.classList.add("hidden");
+        document.querySelector("#filter-state .multi-select-dropdown")?.classList.add("hidden");
+    });
     document.getElementById("filter-type").addEventListener("change", (e) => {
         setFilterType(e.target.value);
         loadProjects();
     });
-    document.getElementById("filter-state").addEventListener("change", (e) => {
-        setFilterState(e.target.value);
-        loadProjects();
+    // State multi-select toggle
+    const stateWrap = document.getElementById("filter-state");
+    const stateTrigger = stateWrap.querySelector(".multi-select-trigger");
+    const stateDropdown = stateWrap.querySelector(".multi-select-dropdown");
+    stateTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        statusDropdown.classList.add("hidden");
+        stateDropdown.classList.toggle("hidden");
     });
+    stateDropdown.addEventListener("click", (e) => e.stopPropagation());
     document.getElementById("filter-date").addEventListener("change", (e) => {
         setFilterDate(e.target.value);
         loadProjects();

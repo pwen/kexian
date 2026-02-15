@@ -21,14 +21,16 @@ class Location(db.Model):
         """Concise state label: 'CO' for US-CO, first word for long intl names."""
         if not self.state_name:
             return ""
-        # US / CA / AU etc. – use the part after the dash in state_code
-        if self.state_code and "-" in self.state_code:
+        # US states – use the 2-letter abbreviation from state_code (e.g. US-CO → CO)
+        if self.country_code == "US" and self.state_code and "-" in self.state_code:
             suffix = self.state_code.split("-", 1)[1]
-            # If suffix is 2-3 uppercase letters it's a good abbreviation
             if suffix.isalpha() and len(suffix) <= 3:
                 return suffix.upper()
-        # Fallback: first word of the state name (handles long intl names)
-        return self.state_name.split()[0]
+        # International: first word of the state name (e.g. "Guangxi Zhuangzu Zizhiqu" → "Guangxi")
+        first = self.state_name.split()[0]
+        if first != self.state_name:
+            return first
+        return self.state_name
 
     def to_dict(self):
         return {

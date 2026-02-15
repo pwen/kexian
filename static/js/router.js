@@ -62,6 +62,25 @@ export function syncStatusButtons() {
     }
 }
 
+export function syncStateButtons() {
+    const active = filterState ? filterState.split(",") : [];
+    const wrap = document.getElementById("filter-state");
+    if (!wrap) return;
+    wrap.querySelectorAll(".multi-select-dropdown input[type=checkbox]").forEach(cb => {
+        cb.checked = active.includes(cb.value);
+    });
+    const trigger = wrap.querySelector(".multi-select-trigger");
+    if (trigger) {
+        trigger.textContent = active.length
+            ? active.map(v => {
+                // Find the short label from the checkbox's sibling span
+                const cb = wrap.querySelector(`input[value="${v}"]`);
+                return cb ? cb.closest("label").querySelector("span").textContent : v;
+            }).join(", ")
+            : "All States";
+    }
+}
+
 export function updateURL() {
     const params = new URLSearchParams();
     if (filterStatus) params.set("status", filterStatus);
@@ -96,6 +115,7 @@ export function initRouter() {
     filterState = params.get("state") || "";
     filterDate = params.get("date") || "";
     syncStatusButtons();
+    syncStateButtons();
     document.getElementById("filter-type").value = filterType;
     // filter-state and filter-date are populated async
 }
