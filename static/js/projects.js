@@ -105,6 +105,16 @@ function renderProjects() {
     const owner = isOwner();
 
     let html = `<table class="projects-table">
+      <colgroup>
+        <col style="width:8%">
+        <col style="width:${owner ? '18%' : '22%'}">
+        <col style="width:8%">
+        <col style="width:7%">
+        <col style="width:${owner ? '17%' : '21%'}">
+        <col style="width:${owner ? '13%' : '17%'}">
+        <col style="width:${owner ? '13%' : '17%'}">
+        ${owner ? '<col style="width:16%">' : ''}
+      </colgroup>
       <thead><tr>
         <th class="sortable" data-col="status">Status${arrow("status")}</th>
         <th class="sortable" data-col="name">Name${arrow("name")}</th>

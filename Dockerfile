@@ -27,4 +27,4 @@ COPY . .
 EXPOSE 5001
 
 # Railway sets $PORT; default to 5001 for local
-CMD ["sh", "-c", "flask db upgrade && gunicorn --bind 0.0.0.0:${PORT:-5001} --access-logfile - --error-logfile - app:app"]
+CMD ["sh", "-c", "flask db upgrade && gunicorn --bind 0.0.0.0:${PORT:-5001} --workers 2 --preload --access-logfile - --error-logfile - --log-level debug app:app"]
