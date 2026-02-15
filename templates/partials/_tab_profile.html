@@ -1,0 +1,21 @@
+<!-- ===== Profile Tab ===== -->
+<div id="tab-profile" class="tab-content">
+    <div class="profile-card">
+        <div class="profile-header">
+            <img id="profile-avatar" class="profile-avatar" src="" alt="avatar" />
+            <h2 id="profile-username"></h2>
+        </div>
+        <form id="profile-form" class="profile-form">
+            <label>Height (cm)
+                <input type="number" id="profile-height" min="100" max="250" step="0.1" />
+            </label>
+            <label>Ape Index (cm) <span class="hint">e.g. +2 or −3</span>
+                <input type="number" id="profile-reach" min="-30" max="30" step="0.1" />
+            </label>
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary" id="profile-save-btn">Save</button>
+            </div>
+            <p id="profile-saved" class="profile-saved hidden">Saved!</p>
+        </form>
+    </div>
+</div><!-- /tab-profile -->

@@ -1,0 +1,31 @@
+<!-- Session Modal -->
+<div id="session-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2 id="session-modal-title">Log Session</h2>
+        <form id="session-form">
+            <input type="hidden" id="session-id" />
+            <input type="hidden" id="session-project-id" />
+            <label>Date
+                <input type="date" id="session-date" />
+            </label>
+            <label>Style
+                <select id="session-style">
+                    <option value="0">Attempt</option>
+                    <option value="1">Flash</option>
+                    <option value="2">Send</option>
+                </select>
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" id="session-planned" />
+                Planned (hasn't happened yet)
+            </label>
+            <label>Notes
+                <textarea id="session-notes" rows="6"></textarea>
+            </label>
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">Log</button>
+                <button type="button" class="btn-secondary" id="cancel-session">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

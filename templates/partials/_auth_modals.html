@@ -1,0 +1,52 @@
+<!-- Login Modal -->
+<div id="login-modal" class="modal hidden">
+    <div class="modal-content modal-narrow">
+        <h2>Log In</h2>
+        <form id="login-form">
+            <label>Username
+                <input type="text" id="login-username" required autocomplete="username" />
+            </label>
+            <label>Password
+                <input type="password" id="login-password" required autocomplete="current-password" />
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" id="login-remember" checked />
+                Remember me (30 days)
+            </label>
+            <div id="login-error" class="form-error hidden"></div>
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">Log In</button>
+                <button type="button" class="btn-secondary" id="cancel-login">Cancel</button>
+            </div>
+            <p class="modal-footer-text">No account? <a href="#" id="switch-to-signup">Sign up</a></p>
+        </form>
+    </div>
+</div>
+
+<!-- Signup Modal -->
+<div id="signup-modal" class="modal hidden">
+    <div class="modal-content modal-narrow">
+        <h2>Sign Up</h2>
+        <form id="signup-form">
+            <label>Username
+                <input type="text" id="signup-username" required autocomplete="username" pattern="[a-zA-Z0-9_\-]{3,30}"
+                    title="3-30 chars: letters, numbers, _ -" />
+            </label>
+            <label>Password
+                <input type="password" id="signup-password" required minlength="6" autocomplete="new-password" />
+            </label>
+            <label>Height (cm) <span class="hint">optional</span>
+                <input type="number" id="signup-height" min="100" max="250" step="0.1" />
+            </label>
+            <label>Reach (+/-) (cm) <span class="hint">optional, e.g. +2 or −3</span>
+                <input type="number" id="signup-reach" min="-30" max="30" step="0.1" />
+            </label>
+            <div id="signup-error" class="form-error hidden"></div>
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">Sign Up</button>
+                <button type="button" class="btn-secondary" id="cancel-signup">Cancel</button>
+            </div>
+            <p class="modal-footer-text">Have an account? <a href="#" id="switch-to-login">Log in</a></p>
+        </form>
+    </div>
+</div>

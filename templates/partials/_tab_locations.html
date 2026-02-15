@@ -1,0 +1,37 @@
+<!-- ===== Locations Tab ===== -->
+<div id="tab-locations" class="tab-content">
+    <div class="locations-toolbar">
+        <button class="btn-primary" id="add-location-btn">+ Add Location</button>
+    </div>
+    <div id="locations-list"></div>
+
+    <!-- Edit Location Modal -->
+    <div id="edit-location-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="edit-loc-title">Edit Location</h2>
+            <form id="edit-location-form">
+                <input type="hidden" id="edit-loc-id" />
+                <label>Country *
+                    <select id="edit-loc-country" required>
+                        <option value="">Select country…</option>
+                    </select>
+                </label>
+                <label>State / Province
+                    <select id="edit-loc-state">
+                        <option value="">— None —</option>
+                    </select>
+                </label>
+                <label>Area * <span class="hint">(e.g. Bishop, Rocklands)</span>
+                    <input type="text" id="edit-loc-area" required />
+                </label>
+                <label>Crag <span class="hint">(e.g. Buttermilks)</span>
+                    <input type="text" id="edit-loc-crag" />
+                </label>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">Save</button>
+                    <button type="button" class="btn-secondary" id="cancel-edit-location">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div><!-- /tab-locations -->
