@@ -41,16 +41,23 @@ export function switchTab(tab, pushState = true) {
     }
 }
 
+const STATUS_NAMES = { "0": "To Try", "1": "Projecting", "2": "On Hold", "3": "Sent" };
+
 export function syncStatusButtons() {
     const active = filterStatus ? filterStatus.split(",") : [];
-    document.querySelectorAll("#filter-status .filter-btn").forEach(btn => {
-        const v = btn.dataset.status;
-        if (v === "") {
-            btn.classList.toggle("active", active.length === 0);
-        } else {
-            btn.classList.toggle("active", active.includes(v));
-        }
+    const wrap = document.getElementById("filter-status");
+    if (!wrap) return;
+    // Sync checkboxes
+    wrap.querySelectorAll(".multi-select-dropdown input[type=checkbox]").forEach(cb => {
+        cb.checked = active.includes(cb.value);
     });
+    // Update trigger label
+    const trigger = wrap.querySelector(".multi-select-trigger");
+    if (trigger) {
+        trigger.textContent = active.length
+            ? active.map(v => STATUS_NAMES[v] || v).join(", ")
+            : "All Status";
+    }
 }
 
 export function updateURL() {

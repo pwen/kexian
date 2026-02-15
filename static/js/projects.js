@@ -323,23 +323,24 @@ export function initProjects() {
         });
     });
 
-    // Status toggle buttons (multi-select)
-    document.querySelectorAll("#filter-status .filter-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const v = btn.dataset.status;
-            if (v === "") {
-                // "All" clicked — clear selection
-                setFilterStatus("");
-            } else {
-                const current = filterStatus ? filterStatus.split(",") : [];
-                const idx = current.indexOf(v);
-                if (idx >= 0) current.splice(idx, 1); else current.push(v);
-                setFilterStatus(current.join(","));
-            }
+    // Status multi-select dropdown
+    const statusWrap = document.getElementById("filter-status");
+    const statusTrigger = statusWrap.querySelector(".multi-select-trigger");
+    const statusDropdown = statusWrap.querySelector(".multi-select-dropdown");
+    statusTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        statusDropdown.classList.toggle("hidden");
+    });
+    statusDropdown.addEventListener("click", (e) => e.stopPropagation());
+    statusDropdown.querySelectorAll("input[type=checkbox]").forEach(cb => {
+        cb.addEventListener("change", () => {
+            const checked = [...statusDropdown.querySelectorAll("input:checked")].map(c => c.value);
+            setFilterStatus(checked.join(","));
             syncStatusButtons();
             loadProjects();
         });
     });
+    document.addEventListener("click", () => statusDropdown.classList.add("hidden"));
     document.getElementById("filter-type").addEventListener("change", (e) => {
         setFilterType(e.target.value);
         loadProjects();

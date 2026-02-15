@@ -2,12 +2,14 @@
 <div id="tab-projects" class="tab-content active">
     <!-- Filters -->
     <div class="filters">
-        <div id="filter-status" class="status-toggles">
-            <button class="filter-btn active" data-status="">All</button>
-            <button class="filter-btn" data-status="0">To Try</button>
-            <button class="filter-btn" data-status="1">Projecting</button>
-            <button class="filter-btn" data-status="2">On Hold</button>
-            <button class="filter-btn" data-status="3">Sent</button>
+        <div id="filter-status" class="multi-select">
+            <button class="multi-select-trigger filter-select">All Status</button>
+            <div class="multi-select-dropdown hidden">
+                <label class="multi-select-option"><input type="checkbox" value="0"><span>To Try</span></label>
+                <label class="multi-select-option"><input type="checkbox" value="1"><span>Projecting</span></label>
+                <label class="multi-select-option"><input type="checkbox" value="2"><span>On Hold</span></label>
+                <label class="multi-select-option"><input type="checkbox" value="3"><span>Sent</span></label>
+            </div>
         </div>
         <select id="filter-type" class="filter-select">
             <option value="">All Types</option>
