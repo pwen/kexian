@@ -145,7 +145,7 @@ function renderProjects() {
                   <button class="btn-icon danger" onclick="deleteSession(${s.id}, ${p.id})" title="Delete">✕</button>
                 </span>` : ''}
               </div>`).join("")
-            : `<p class="no-sessions">No sessions yet.</p>`;
+            : "";
 
         html += `
           <tr class="project-row" data-id="${p.id}">
@@ -161,17 +161,21 @@ function renderProjects() {
               <button class="btn-icon danger" onclick="deleteProject(${p.id})" title="Delete">✕</button>
               <button class="btn-icon accent" onclick="openSessionModal(${p.id})" title="Log Session">📝</button>
             </td>` : ''}
-          </tr>
+          </tr>`;
+
+        if (sessionCount) {
+            html += `
           <tr class="sessions-row hidden" id="sessions-row-${p.id}">
             <td colspan="${owner ? 8 : 7}">
               <div class="sessions-block">
                 <div class="sessions-header">
-                  <h4 class="sessions-heading">Sessions${sessionCount ? ` (${sessionCount})` : ""}</h4>
+                  <h4 class="sessions-heading">Sessions (${sessionCount})</h4>
                 </div>
                 ${sessionsHtml}
               </div>
             </td>
           </tr>`;
+        }
     }
     html += `</tbody></table>`;
     projectsList.innerHTML = html;
@@ -190,7 +194,9 @@ function renderProjects() {
         tr.addEventListener("click", (e) => {
             if (e.target.closest("button")) return;
             const id = tr.dataset.id;
-            document.getElementById(`sessions-row-${id}`).classList.toggle("hidden");
+            const row = document.getElementById(`sessions-row-${id}`);
+            if (!row) return;
+            row.classList.toggle("hidden");
         });
     });
 }
