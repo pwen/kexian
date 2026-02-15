@@ -19,7 +19,7 @@ const projectModal = document.getElementById("project-modal");
 const projectForm = document.getElementById("project-form");
 
 let allProjects = [];
-let sortCol = "name";
+let sortCol = "status";
 let sortAsc = true;
 let allExpanded = false;
 let dateFilterYears = [];
@@ -62,12 +62,29 @@ export async function loadProjects() {
     renderProjects();
 }
 
+// Custom status sort order: Projecting(1) -> To Try(0) -> Sent(3) -> On Hold(2)
+const STATUS_ORDER = { 1: 0, 0: 1, 3: 2, 2: 3 };
+
+function getLastSessionDate(p) {
+    const real = (p.sessions || []).filter(s => !s.planned);
+    return real.length ? real[0].date : "";
+}
+
 function sortProjects(projects) {
     const sorted = [...projects];
     sorted.sort((a, b) => {
         let va, vb;
         switch (sortCol) {
-            case "status": va = a.status; vb = b.status; break;
+            case "status":
+                va = STATUS_ORDER[a.status] ?? 99;
+                vb = STATUS_ORDER[b.status] ?? 99;
+                if (va !== vb) return sortAsc ? va - vb : vb - va;
+                // Secondary: last session date descending (latest first)
+                const da = getLastSessionDate(a);
+                const db = getLastSessionDate(b);
+                if (da > db) return -1;
+                if (da < db) return 1;
+                return 0;
             case "name": va = (a.name || "").toLowerCase(); vb = (b.name || "").toLowerCase(); break;
             case "type": va = a.type; vb = b.type; break;
             case "grade": va = (a.grade || ""); vb = (b.grade || ""); break;
@@ -76,8 +93,8 @@ function sortProjects(projects) {
                 vb = b.location ? (b.location.crag || b.location.area || "").toLowerCase() : "";
                 break;
             case "last_session":
-                va = (a.sessions || []).filter(s => !s.planned).length ? a.sessions.filter(s => !s.planned)[0].date : "";
-                vb = (b.sessions || []).filter(s => !s.planned).length ? b.sessions.filter(s => !s.planned)[0].date : "";
+                va = getLastSessionDate(a);
+                vb = getLastSessionDate(b);
                 break;
             case "next_session":
                 const ap = (a.sessions || []).filter(s => s.planned);
