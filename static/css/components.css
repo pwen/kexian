@@ -54,6 +54,21 @@
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 .multi-select-dropdown.hidden { display: none; }
+.multi-select-all {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 0.4rem 0.75rem;
+  font-size: 14px;
+  color: var(--accent);
+  cursor: pointer;
+}
+.multi-select-all:hover {
+  background: rgba(255,255,255,0.05);
+}
 .multi-select-option {
   display: flex;
   align-items: center;

@@ -54,9 +54,16 @@ async function populateStateFilter() {
     stateFilterOptions = states;
     const wrap = document.getElementById("filter-state");
     const dropdown = wrap.querySelector(".multi-select-dropdown");
-    dropdown.innerHTML = states.map(s =>
+    dropdown.innerHTML = `<button class="multi-select-all">All</button>`
+        + states.map(s =>
         `<label class="multi-select-option"><input type="checkbox" value="${s.state_name}"><span>${s.state_short}</span></label>`
     ).join("");
+    // "All" resets state filter
+    dropdown.querySelector(".multi-select-all")?.addEventListener("click", () => {
+        setFilterState("");
+        syncStateButtons();
+        loadProjects();
+    });
     // Attach change listeners to new checkboxes
     dropdown.querySelectorAll("input[type=checkbox]").forEach(cb => {
         cb.addEventListener("change", () => {
@@ -357,6 +364,11 @@ export function initProjects() {
         statusDropdown.classList.toggle("hidden");
     });
     statusDropdown.addEventListener("click", (e) => e.stopPropagation());
+    statusDropdown.querySelector(".multi-select-all")?.addEventListener("click", () => {
+        setFilterStatus("");
+        syncStatusButtons();
+        loadProjects();
+    });
     statusDropdown.querySelectorAll("input[type=checkbox]").forEach(cb => {
         cb.addEventListener("change", () => {
             const checked = [...statusDropdown.querySelectorAll("input:checked")].map(c => c.value);
