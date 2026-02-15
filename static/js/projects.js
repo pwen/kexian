@@ -6,7 +6,7 @@ import { api, apiBase, isOwner, profileUser, esc } from "./api.js";
 import {
     filterStatus, filterType, filterDate,
     setFilterStatus, setFilterType, setFilterDate,
-    updateURL,
+    updateURL, syncStatusButtons,
 } from "./router.js";
 import { openSessionModal, editSession, deleteSession } from "./sessions.js";
 
@@ -323,10 +323,22 @@ export function initProjects() {
         });
     });
 
-    // Filter dropdowns
-    document.getElementById("filter-status").addEventListener("change", (e) => {
-        setFilterStatus(e.target.value);
-        loadProjects();
+    // Status toggle buttons (multi-select)
+    document.querySelectorAll("#filter-status .filter-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const v = btn.dataset.status;
+            if (v === "") {
+                // "All" clicked — clear selection
+                setFilterStatus("");
+            } else {
+                const current = filterStatus ? filterStatus.split(",") : [];
+                const idx = current.indexOf(v);
+                if (idx >= 0) current.splice(idx, 1); else current.push(v);
+                setFilterStatus(current.join(","));
+            }
+            syncStatusButtons();
+            loadProjects();
+        });
     });
     document.getElementById("filter-type").addEventListener("change", (e) => {
         setFilterType(e.target.value);

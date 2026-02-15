@@ -41,6 +41,18 @@ export function switchTab(tab, pushState = true) {
     }
 }
 
+export function syncStatusButtons() {
+    const active = filterStatus ? filterStatus.split(",") : [];
+    document.querySelectorAll("#filter-status .filter-btn").forEach(btn => {
+        const v = btn.dataset.status;
+        if (v === "") {
+            btn.classList.toggle("active", active.length === 0);
+        } else {
+            btn.classList.toggle("active", active.includes(v));
+        }
+    });
+}
+
 export function updateURL() {
     const params = new URLSearchParams();
     if (filterStatus) params.set("status", filterStatus);
@@ -72,7 +84,7 @@ export function initRouter() {
     filterStatus = params.get("status") || "";
     filterType = params.get("type") || "";
     filterDate = params.get("date") || "";
-    document.getElementById("filter-status").value = filterStatus;
+    syncStatusButtons();
     document.getElementById("filter-type").value = filterType;
     // filter-date is populated async, set after populateDateFilter
 }

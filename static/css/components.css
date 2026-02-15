@@ -21,6 +21,15 @@
   color: #fff;
   border-color: var(--accent);
 }
+.status-toggles {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+.status-toggles .filter-btn {
+  font-size: 13px;
+  padding: 0.4rem 0.75rem;
+}
 .filter-select {
   background: var(--surface);
   border: 1px solid var(--border);

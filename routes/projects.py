@@ -66,12 +66,14 @@ def list_projects(username):
     user, err = _get_user_or_404(username)
     if err:
         return err
-    status = request.args.get("status", type=int)
+    status_param = request.args.get("status", type=str)
     climb_type = request.args.get("type", type=int)
     date_filter = request.args.get("date", type=str)
     query = Project.query.filter_by(user_id=user.id).order_by(Project.created_at.desc())
-    if status is not None:
-        query = query.filter_by(status=status)
+    if status_param:
+        statuses = [int(s) for s in status_param.split(",") if s.isdigit()]
+        if statuses:
+            query = query.filter(Project.status.in_(statuses))
     if climb_type is not None:
         query = query.filter_by(type=climb_type)
     if date_filter:
