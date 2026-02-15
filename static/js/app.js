@@ -2,7 +2,7 @@
 // app.js – Entry point: imports and initializes all modules
 // ---------------------------------------------------------------------------
 
-import { setupAuthModals, fetchCurrentUser } from "./auth.js";
+import { setupAuthModals, fetchCurrentUser, initProfileForm } from "./auth.js";
 import { initRouter } from "./router.js";
 import { loadLocations, initLocationModal } from "./locations.js";
 import { initSessionModal } from "./sessions.js";
@@ -14,5 +14,6 @@ setupAuthModals();
 fetchCurrentUser();
 initLocationModal();
 initSessionModal();
+initProfileForm();
 initProjects();
 loadLocations();

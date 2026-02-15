@@ -106,13 +106,13 @@ function renderProjects() {
 
     let html = `<table class="projects-table">
       <colgroup>
-        <col style="width:8%">
-        <col style="width:${owner ? '18%' : '22%'}">
+        <col style="width:11%">
+        <col style="width:${owner ? '17%' : '21%'}">
         <col style="width:8%">
         <col style="width:7%">
         <col style="width:${owner ? '17%' : '21%'}">
-        <col style="width:${owner ? '13%' : '17%'}">
-        <col style="width:${owner ? '13%' : '17%'}">
+        <col style="width:${owner ? '12%' : '16%'}">
+        <col style="width:${owner ? '12%' : '16%'}">
         ${owner ? '<col style="width:16%">' : ''}
       </colgroup>
       <thead><tr>
@@ -127,7 +127,7 @@ function renderProjects() {
       </tr></thead><tbody>`;
 
     for (const p of sorted) {
-        const locName = p.location ? esc([p.location.crag, p.location.area].filter(Boolean).join(", ")) : "";
+        const locName = p.location ? esc([p.location.crag, p.location.state_name].filter(Boolean).join(", ")) : "";
         const realSessions = p.sessions ? p.sessions.filter(s => !s.planned) : [];
         const plannedSessions = p.sessions ? p.sessions.filter(s => s.planned) : [];
         const lastDate = realSessions.length ? realSessions[0].date : "";

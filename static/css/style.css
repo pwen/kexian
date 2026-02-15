@@ -223,7 +223,7 @@ main {
 .projects-table tbody .project-row:hover td {
   background: rgba(59,130,246,0.06);
 }
-.col-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.col-name { font-weight: 600; word-wrap: break-word; overflow-wrap: break-word; }
 .col-date {
   color: var(--muted);
   font-variant-numeric: tabular-nums;
@@ -233,7 +233,7 @@ main {
 }
 .col-location {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 11px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -305,6 +305,7 @@ main {
   text-transform: uppercase;
   padding: 0.1rem 0.45rem;
   border-radius: 4px;
+  white-space: nowrap;
 }
 .status-badge.to-try   { background: rgba(59,130,246,0.15);  color: var(--accent); }
 .status-badge.projecting { background: rgba(234,179,8,0.15);  color: var(--yellow); }
@@ -538,4 +539,67 @@ main {
 }
 .modal-footer-text a:hover {
   text-decoration: underline;
+}
+
+/* ---------- Locations Tab ---------- */
+.locations-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+.locations-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+}
+.locations-table thead th {
+  text-align: left;
+  padding: 0.7rem 0.85rem;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.locations-table tbody td {
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.locations-table tbody tr:hover td {
+  background: rgba(59,130,246,0.06);
+}
+
+/* ---------- Profile Tab ---------- */
+.profile-card {
+  max-width: 400px;
+  margin: 2rem auto;
+}
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--surface);
+}
+.profile-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+.profile-form label {
+  display: block;
+  margin-bottom: 1rem;
+}
+.profile-saved {
+  color: var(--green);
+  font-size: 13px;
+  margin-top: 0.5rem;
 }

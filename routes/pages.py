@@ -19,6 +19,8 @@ def index():
 
 @bp.route("/<username>/projects")
 @bp.route("/<username>/ascents")
+@bp.route("/<username>/locations")
+@bp.route("/<username>/profile")
 def spa_page(username):
     user = User.query.filter_by(username=username).first()
     if not user:

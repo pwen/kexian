@@ -22,6 +22,7 @@
         <div class="nav-links">
             <a class="tab active" href="/projects" data-tab="projects">Projects</a>
             <a class="tab" href="/ascents" data-tab="ascents">Ascents</a>
+            <a class="tab" href="/locations" data-tab="locations">Locations</a>
             <span class="nav-separator">|</span>
             <span id="auth-nav"></span>
         </div>
@@ -254,6 +255,66 @@
                 <p>Your send log and stats will appear here.</p>
             </div>
         </div><!-- /tab-ascents -->
+
+        <!-- ===== Locations Tab ===== -->
+        <div id="tab-locations" class="tab-content">
+            <div class="locations-toolbar">
+                <button class="btn-primary" id="add-location-btn">+ Add Location</button>
+            </div>
+            <div id="locations-list"></div>
+
+            <!-- Edit Location Modal -->
+            <div id="edit-location-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="edit-loc-title">Edit Location</h2>
+                    <form id="edit-location-form">
+                        <input type="hidden" id="edit-loc-id" />
+                        <label>Country *
+                            <select id="edit-loc-country" required>
+                                <option value="">Select country…</option>
+                            </select>
+                        </label>
+                        <label>State / Province
+                            <select id="edit-loc-state">
+                                <option value="">— None —</option>
+                            </select>
+                        </label>
+                        <label>Area * <span class="hint">(e.g. Bishop, Rocklands)</span>
+                            <input type="text" id="edit-loc-area" required />
+                        </label>
+                        <label>Crag <span class="hint">(e.g. Buttermilks)</span>
+                            <input type="text" id="edit-loc-crag" />
+                        </label>
+                        <div class="modal-actions">
+                            <button type="submit" class="btn-primary">Save</button>
+                            <button type="button" class="btn-secondary" id="cancel-edit-location">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div><!-- /tab-locations -->
+
+        <!-- ===== Profile Tab ===== -->
+        <div id="tab-profile" class="tab-content">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <img id="profile-avatar" class="profile-avatar" src="" alt="avatar" />
+                    <h2 id="profile-username"></h2>
+                </div>
+                <form id="profile-form" class="profile-form">
+                    <label>Height (cm)
+                        <input type="number" id="profile-height" min="100" max="250" step="0.1" />
+                    </label>
+                    <label>Ape Index (cm) <span class="hint">e.g. +2 or −3</span>
+                        <input type="number" id="profile-reach" min="-30" max="30" step="0.1" />
+                    </label>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn-primary" id="profile-save-btn">Save</button>
+                    </div>
+                    <p id="profile-saved" class="profile-saved hidden">Saved!</p>
+                </form>
+            </div>
+        </div><!-- /tab-profile -->
     </main>
 
     <script>

@@ -3,12 +3,14 @@
 // ---------------------------------------------------------------------------
 
 import { currentUser, setCurrentUser, isOwner, esc } from "./api.js";
+import { switchTab, getActiveTab } from "./router.js";
 
 export async function fetchCurrentUser() {
     const res = await fetch("/api/auth/me");
     setCurrentUser(await res.json());
     renderAuthNav();
     renderOwnerUI();
+    if (getActiveTab() === "profile") populateProfile();
 }
 
 function renderAuthNav() {
@@ -17,13 +19,22 @@ function renderAuthNav() {
     if (currentUser) {
         el.innerHTML = `
             <img src="${esc(currentUser.avatar_url)}" alt="avatar" class="nav-avatar" />
-            <a href="/${esc(currentUser.username)}/projects" class="nav-user">${esc(currentUser.username)}</a>
+            <a href="/${esc(currentUser.username)}/profile" class="nav-user tab" data-tab="profile">${esc(currentUser.username)}</a>
             <a href="#" id="logout-btn" class="tab">Logout</a>`;
         document.getElementById("logout-btn").addEventListener("click", async (e) => {
             e.preventDefault();
             await fetch("/api/auth/logout", { method: "POST" });
             window.location.href = "/";
         });
+        // Username → profile tab
+        const userLink = el.querySelector('.nav-user[data-tab="profile"]');
+        if (userLink) {
+            userLink.addEventListener("click", (e) => {
+                e.preventDefault();
+                switchTab("profile");
+                populateProfile();
+            });
+        }
     } else {
         el.innerHTML = `
             <a href="#" id="show-login" class="tab">Log In</a>
@@ -40,8 +51,47 @@ function renderAuthNav() {
 }
 
 export function renderOwnerUI() {
+    const show = isOwner();
     const addBtn = document.getElementById("add-project-btn");
-    if (addBtn) addBtn.style.display = isOwner() ? "" : "none";
+    if (addBtn) addBtn.style.display = show ? "" : "none";
+    const addLocBtn = document.getElementById("add-location-btn");
+    if (addLocBtn) addLocBtn.style.display = show ? "" : "none";
+    // Profile save button only for owner
+    const profileSave = document.getElementById("profile-save-btn");
+    if (profileSave) profileSave.style.display = show ? "" : "none";
+}
+
+export function populateProfile() {
+    if (!currentUser) return;
+    document.getElementById("profile-avatar").src = currentUser.avatar_url;
+    document.getElementById("profile-username").textContent = currentUser.username;
+    document.getElementById("profile-height").value = currentUser.height_cm ?? "";
+    document.getElementById("profile-reach").value = currentUser.reach_cm ?? "";
+    document.getElementById("profile-saved").classList.add("hidden");
+}
+
+export function initProfileForm() {
+    const form = document.getElementById("profile-form");
+    if (!form) return;
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const body = {
+            height_cm: document.getElementById("profile-height").value !== "" ? parseFloat(document.getElementById("profile-height").value) : null,
+            reach_cm: document.getElementById("profile-reach").value !== "" ? parseFloat(document.getElementById("profile-reach").value) : null,
+        };
+        const res = await fetch("/api/auth/profile", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+        });
+        if (res.ok) {
+            const updated = await res.json();
+            setCurrentUser(updated);
+            const saved = document.getElementById("profile-saved");
+            saved.classList.remove("hidden");
+            setTimeout(() => saved.classList.add("hidden"), 2000);
+        }
+    });
 }
 
 export function setupAuthModals() {

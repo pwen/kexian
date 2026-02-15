@@ -63,3 +63,46 @@ def create_location():
     db.session.add(loc)
     db.session.commit()
     return jsonify({**loc.to_dict(), "display_name": loc.display_name()}), 201
+
+
+@bp.route("/api/locations/<int:loc_id>", methods=["PUT"])
+def update_location(loc_id):
+    loc = Location.query.get_or_404(loc_id)
+    data = request.get_json(force=True)
+
+    country = pycountry.countries.get(alpha_2=data.get("country_code", loc.country_code))
+    if not country:
+        return jsonify({"error": "Invalid country code"}), 400
+
+    state_name = loc.state_name
+    state_code = data.get("state_code", loc.state_code)
+    if state_code and state_code != loc.state_code:
+        sub = pycountry.subdivisions.get(code=state_code)
+        if not sub:
+            return jsonify({"error": "Invalid subdivision code"}), 400
+        state_name = sub.name
+    elif not state_code:
+        state_name = ""
+
+    loc.country_code = country.alpha_2
+    loc.country_name = country.name
+    loc.state_code = state_code
+    loc.state_name = state_name
+    loc.area = data.get("area", loc.area)
+    loc.crag = data.get("crag", loc.crag)
+
+    db.session.commit()
+    return jsonify({**loc.to_dict(), "display_name": loc.display_name()})
+
+
+@bp.route("/api/locations/<int:loc_id>", methods=["DELETE"])
+def delete_location(loc_id):
+    loc = Location.query.get_or_404(loc_id)
+    # Check if any projects reference this location
+    from models import Project
+    count = Project.query.filter_by(location_id=loc.id).count()
+    if count > 0:
+        return jsonify({"error": f"Cannot delete: {count} project(s) use this location"}), 409
+    db.session.delete(loc)
+    db.session.commit()
+    return "", 204
